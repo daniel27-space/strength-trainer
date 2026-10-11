@@ -34,6 +34,7 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#5b8a62;padding:10px 18px;border-radius:20px;display:none;z-index:9}
 .trash{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;color:#e5736b}
 .share{margin-top:16px;border-top:1px solid #2a3a2e;padding-top:12px}.share summary{cursor:pointer;color:#9fb8a4;padding:8px 0;font-size:15px}
+.nw{white-space:nowrap;font-size:15px;padding-left:6px;padding-right:6px}
 </style></head><body>
 <div class="row"><h1 id="title">Strength Tracker</h1><button style="flex:0" onclick="openSetup()">⚙︎</button></div>
 <div class="total"><b id="tot">0/0</b><small id="totsub"></small></div>
@@ -54,7 +55,7 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 <div class="muted" id="ahint">&nbsp;</div>
 <div class="chips" id="chips"></div>
 <input id="aother" placeholder="Other reason" style="display:none">
-<div class="row" style="margin-top:14px"><button onclick="clearAdj()">Reset section</button><button onclick="edD.close()">Cancel</button><button class="p" onclick="saveEdit()">Save</button></div>
+<div class="row" style="margin-top:14px"><button class="nw" onclick="clearAdj()">Reset section</button><button onclick="edD.close()">Cancel</button><button class="p" onclick="saveEdit()">Save</button></div>
 </form></dialog>
 <dialog id="setD"><form method="dialog" onsubmit="return false">
 <label>Platoon number</label><input id="splt" inputmode="numeric">
