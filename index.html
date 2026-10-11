@@ -33,6 +33,7 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 .row{display:flex;gap:8px;align-items:center}.row>*{flex:1}textarea{width:100%;height:110px;font:13px monospace;background:#111813;color:#fff;border-radius:12px;padding:8px}
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#5b8a62;padding:10px 18px;border-radius:20px;display:none;z-index:9}
 .trash{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;color:#e5736b}
+.share{margin-top:16px;border-top:1px solid #2a3a2e;padding-top:12px}.share summary{cursor:pointer;color:#9fb8a4;padding:8px 0;font-size:15px}
 </style></head><body>
 <div class="row"><h1 id="title">Strength Tracker</h1><button style="flex:0" onclick="openSetup()">⚙︎</button></div>
 <div class="total"><b id="tot">0/0</b><small id="totsub"></small></div>
@@ -59,9 +60,9 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 <label>Platoon number</label><input id="splt" inputmode="numeric">
 <label>Sections (number → total strength)</label><div id="slist"></div>
 <button onclick="addSec()" style="margin-top:8px">+ Add section</button>
-<label>Share setup code (others paste this into Import)</label>
+<details class="share"><summary>Share with other ICs</summary><label>Setup code (others paste this into Import)</label>
 <textarea id="scode" readonly onclick="this.select()"></textarea>
-<div class="row"><button onclick="copyText(scode.value,'Code copied')">Copy code</button><button onclick="doImport()">Import code</button></div>
+<div class="row"><button type="button" onclick="copyText(scode.value,'Code copied')">Copy code</button><button type="button" onclick="doImport()">Import code</button></div></details>
 <div class="row" style="margin-top:14px"><button onclick="setD.close()">Cancel</button><button class="p" onclick="saveSetup()">Save</button></div>
 </form></dialog>
 
