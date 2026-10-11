@@ -53,7 +53,7 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 <div class="muted" id="ahint">&nbsp;</div>
 <div class="chips" id="chips"></div>
 <input id="aother" placeholder="Other reason" style="display:none">
-<div class="row" style="margin-top:14px"><button onclick="clearAdj()">Clear</button><button onclick="edD.close()">Cancel</button><button class="p" onclick="saveEdit()">Save</button></div>
+<div class="row" style="margin-top:14px"><button onclick="clearAdj()">Reset section</button><button onclick="edD.close()">Cancel</button><button class="p" onclick="saveEdit()">Save</button></div>
 </form></dialog>
 <dialog id="setD"><form method="dialog" onsubmit="return false">
 <label>Platoon number</label><input id="splt" inputmode="numeric">
@@ -85,7 +85,7 @@ function setP(v){pend=Math.max(0,Math.min(parseInt(v)||0,autoP(curSec())));drawE
 function stepE(d){setP(pend+d)}
 function commitAdj(){const s=curSec();S.adj=S.adj||{};if(pend>=autoP(s))delete S.adj[edN];else S.adj[edN]=pend;save();render()}
 function saveEdit(){commitAdj();edD.close()}
-function clearAdj(){if(S.adj)delete S.adj[edN];pend=autoP(curSec());save();render();drawEd()}
+function clearAdj(){if(!confirm('Reset Section '+edN+' to full strength and remove everyone out?'))return;const rm=outsOf(edN);S.out=S.out.filter(o=>!rm.includes(o));if(S.adj)delete S.adj[edN];pend=autoP(curSec());save();render();drawEd()}
 function edId(v){v=v.replace(/\D/g,'');if(v.length===1)v='0'+v;if(v.length===2)v=''+S.platoon+edN+v;else if(v.length===3)v=S.platoon+v;return v.length===4?v:null}
 function idHint(){const id=edId(aid.value);let m='&nbsp;';if(id){m=secOf(id)!==edN?'⚠ '+id+' is not section '+edN:id[0]!=String(S.platoon)?'⚠ Not platoon '+S.platoon:`→ ${id}`+(S.out.some(o=>o.id===id)?' (already out)':'')}ahint.innerHTML=m}
 function addOut(){const id=edId(aid.value);if(!id)return toast('Enter man number');if(secOf(id)!==edN||id[0]!=String(S.platoon))return toast(id+' is not in section '+edN);if(S.out.some(o=>o.id===id))return toast(id+' already out');
