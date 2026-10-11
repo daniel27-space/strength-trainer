@@ -65,8 +65,8 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 </form></dialog>
 
 <script>
-const KEY='strengthTracker.v1',REASONS=['Book out','MC','Ammo','Guard','Medical appt','Detention','Other'];
-let S=load(),reason='Book out',tmpSecs=[];
+const KEY='strengthTracker.v1',REASONS=['MC','Ammo','Physio','Break','Other'];
+let S=load(),reason='MC',tmpSecs=[];
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.sections)return s}catch(e){}return{platoon:4,sections:[{n:1,total:16},{n:2,total:15},{n:3,total:16},{n:4,total:15}],out:[]}}
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
@@ -76,7 +76,7 @@ function autoP(sec){return Math.max(0,sec.total-outsOf(sec.n).length)}
 function present(sec){const a=(S.adj||{})[sec.n],au=autoP(sec);return a==null?au:Math.max(0,Math.min(a,au))}
 let edN=null,pend=null;
 function curSec(){return S.sections.find(x=>x.n===edN)}
-function openEdit(n){edN=n;const s=curSec();pend=present(s);edT.textContent='Section '+n;etot.textContent='/ '+s.total;aid.value='';aother.value='';reason='Book out';drawChips();drawEd();edD.showModal()}
+function openEdit(n){edN=n;const s=curSec();pend=present(s);edT.textContent='Section '+n;etot.textContent='/ '+s.total;aid.value='';aother.value='';reason='MC';drawChips();drawEd();edD.showModal()}
 function drawEd(){const s=curSec(),au=autoP(s);pend=Math.max(0,Math.min(pend,au));ep.value=pend;eauto.textContent='Auto: '+au;
  const un=au-pend;ewarn.style.display=un>0?'block':'none';ewarn.textContent=un+' not accounted for - add IDs';
  const o=outsOf(edN);eout.innerHTML=o.length?o.map(x=>`<div class="out"><span><b>${esc(x.id)}</b> ${esc(x.reason)}${x.time?` <span class="muted">${esc(x.time)}</span>`:''}</span><button onclick="edBack('${esc(x.id)}')">Remove</button></div>`).join(''):'<div class="muted">Nobody out</div>';idHint()}
