@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Strength Tracker</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Strength">
+<meta name="theme-color" content="#0f1512">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233a5a40'/%3E%3Ctext x='50' y='66' font-size='46' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3E15/16%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233a5a40'/%3E%3Ctext x='50' y='64' font-size='40' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3E15/16%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,system-ui,sans-serif;background:#0f1512;color:#e8efe9;padding:env(safe-area-inset-top) 12px 90px}
+h1{font-size:18px;margin:12px 0 4px;color:#9fb8a3}
+.total{background:#3a5a40;border-radius:16px;padding:16px;text-align:center;margin:8px 0 12px}
+.total b{font-size:44px;display:block}.total small{opacity:.8}
+.sec{background:#1a221d;border-radius:14px;padding:12px;margin-bottom:10px}
+.sh{display:flex;justify-content:space-between;align-items:center;font-size:18px}.sh b{font-size:26px}
+.num{font-size:26px;font-weight:700;padding:6px 14px;min-height:52px;background:#24312a;border:1px dashed #5b8a62}
+.tag{font-size:11px;background:#8a6d2b;border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:middle}
+.step{display:flex;gap:8px;align-items:center}.step button{flex:0 0 52px;font-size:22px}.step input{text-align:center;font-size:22px}
+.out{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2a352d;padding:8px 0;gap:8px}
+.out span{flex:1}.muted{color:#8a9a8d;font-size:13px}
+button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#2b3a2f;color:#e8efe9}
+button.p{background:#5b8a62;color:#fff;font-weight:600}button.d{background:#6b2b2b}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#0f1512ee}
+.bar button{flex:1}
+input{font:inherit;width:100%;padding:12px;border-radius:12px;border:1px solid #34443a;background:#111813;color:#fff;min-height:46px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.chips button{padding:10px 12px}.chips .on{background:#5b8a62}
+dialog{background:#1a221d;color:#e8efe9;border:0;border-radius:18px;width:min(94vw,480px);padding:16px}
+dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9fb8a3;font-size:14px}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}textarea{width:100%;height:110px;font:13px monospace;background:#111813;color:#fff;border-radius:12px;padding:8px}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#5b8a62;padding:10px 18px;border-radius:20px;display:none;z-index:9}
+</style></head><body>
+<div class="row"><h1 id="title">Strength Tracker</h1><button style="flex:0" onclick="openSetup()">⚙︎</button></div>
+<div class="total"><b id="tot">0/0</b><small id="totsub"></small></div>
+<div id="secs"></div>
+<div class="bar"><button onclick="copyReport()">Copy report</button><button onclick="resetDay()">Reset day</button></div>
+<div id="toast"></div>
+
+
+
+<dialog id="edD"><form method="dialog" onsubmit="return false">
+<h1 id="edT" style="margin-top:0">Section</h1>
+<label>Present</label><div class="step"><button onclick="stepE(-1)">−</button><input id="ep" inputmode="numeric" onchange="setP(this.value)"><button onclick="stepE(1)">+</button><span id="etot" style="flex:0 0 auto;font-size:22px;white-space:nowrap">/ 16</span></div>
+<div class="muted" id="eauto" style="margin-top:8px"></div>
+<div id="ewarn" style="display:none;margin-top:8px;color:#f0c674;font-weight:600"></div>
+<label>Out</label><div id="eout"></div>
+<label>Add person</label>
+<div class="row"><input id="aid" inputmode="numeric" autocomplete="off" placeholder="Man no. e.g. 10" oninput="idHint()" style="flex:2"><button class="p" onclick="addOut()">Add</button></div>
+<div class="muted" id="ahint">&nbsp;</div>
+<div class="chips" id="chips"></div>
+<input id="aother" placeholder="Other reason" style="display:none">
+<div class="row" style="margin-top:14px"><button onclick="clearAdj()">Clear</button><button onclick="edD.close()">Cancel</button><button class="p" onclick="saveEdit()">Save</button></div>
+</form></dialog>
+<dialog id="setD"><form method="dialog" onsubmit="return false">
+<label>Platoon number</label><input id="splt" inputmode="numeric">
+<label>Sections (number → total strength)</label><div id="slist"></div>
+<button onclick="addSec()" style="margin-top:8px">+ Add section</button>
+<label>Share setup code (others paste this into Import)</label>
+<textarea id="scode" readonly onclick="this.select()"></textarea>
+<div class="row"><button onclick="copyText(scode.value,'Code copied')">Copy code</button><button onclick="doImport()">Import code</button></div>
+<div class="row" style="margin-top:14px"><button onclick="setD.close()">Cancel</button><button class="p" onclick="saveSetup()">Save</button></div>
+</form></dialog>
+
+<script>
+const KEY='strengthTracker.v1',REASONS=['Book out','MC','Ammo','Guard','Medical appt','Detention','Other'];
+let S=load(),reason='Book out',tmpSecs=[];
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.sections)return s}catch(e){}return{platoon:4,sections:[{n:1,total:16},{n:2,total:15},{n:3,total:16},{n:4,total:15}],out:[]}}
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function secOf(id){return +String(id)[1]}
+function outsOf(n){return S.out.filter(o=>secOf(o.id)===n)}
+function autoP(sec){return Math.max(0,sec.total-outsOf(sec.n).length)}
+function present(sec){const a=(S.adj||{})[sec.n],au=autoP(sec);return a==null?au:Math.max(0,Math.min(a,au))}
+let edN=null,pend=null;
+function curSec(){return S.sections.find(x=>x.n===edN)}
+function openEdit(n){edN=n;const s=curSec();pend=present(s);edT.textContent='Section '+n;etot.textContent='/ '+s.total;aid.value='';aother.value='';reason='Book out';drawChips();drawEd();edD.showModal()}
+function drawEd(){const s=curSec(),au=autoP(s);pend=Math.max(0,Math.min(pend,au));ep.value=pend;eauto.textContent='Auto: '+au;
+ const un=au-pend;ewarn.style.display=un>0?'block':'none';ewarn.textContent=un+' not accounted for - add IDs';
+ const o=outsOf(edN);eout.innerHTML=o.length?o.map(x=>`<div class="out"><span><b>${esc(x.id)}</b> ${esc(x.reason)}${x.time?` <span class="muted">${esc(x.time)}</span>`:''}</span><button onclick="edBack('${esc(x.id)}')">Back ✓</button></div>`).join(''):'<div class="muted">Nobody out</div>';idHint()}
+function setP(v){pend=Math.max(0,Math.min(parseInt(v)||0,autoP(curSec())));drawEd();if(autoP(curSec())>pend)aid.focus()}
+function stepE(d){setP(pend+d)}
+function commitAdj(){const s=curSec();S.adj=S.adj||{};if(pend>=autoP(s))delete S.adj[edN];else S.adj[edN]=pend;save();render()}
+function saveEdit(){commitAdj();edD.close()}
+function clearAdj(){if(S.adj)delete S.adj[edN];pend=autoP(curSec());save();render();drawEd()}
+function edId(v){v=v.replace(/\D/g,'');if(v.length===1)v='0'+v;if(v.length===2)v=''+S.platoon+edN+v;else if(v.length===3)v=S.platoon+v;return v.length===4?v:null}
+function idHint(){const id=edId(aid.value);let m='&nbsp;';if(id){m=secOf(id)!==edN?'⚠ '+id+' is not section '+edN:id[0]!=String(S.platoon)?'⚠ Not platoon '+S.platoon:`→ ${id}`+(S.out.some(o=>o.id===id)?' (already out)':'')}ahint.innerHTML=m}
+function addOut(){const id=edId(aid.value);if(!id)return toast('Enter man number');if(secOf(id)!==edN||id[0]!=String(S.platoon))return toast(id+' is not in section '+edN);if(S.out.some(o=>o.id===id))return toast(id+' already out');
+ const r=reason==='Other'?(aother.value.trim()||'Other'):reason.toLowerCase();const s=curSec(),un=autoP(s)-pend;
+ S.out.push({id,reason:r,time:''});S.out.sort((a,b)=>a.id.localeCompare(b.id));
+ if(un<=0)pend=autoP(s); /* no unaccounted slot: present drops by 1 */
+ commitAdj();aid.value='';aother.value='';drawEd();aid.focus()}
+function edBack(id){const s=curSec(),un=autoP(s)-pend;S.out=S.out.filter(o=>o.id!==id);if(un<=0)pend=autoP(s);else pend+=0;pend=Math.min(pend+1,autoP(s));commitAdj();drawEd()}
+function totals(){let p=0,t=0;S.sections.forEach(s=>{p+=present(s);t+=s.total});return[p,t]}
+function render(){
+ title.textContent='Platoon '+S.platoon;const[p,t]=totals();tot.textContent=p+'/'+t;totsub.textContent=(t-p)+' out · total platoon strength';
+ secs.innerHTML=S.sections.map(s=>{const outs=S.out.filter(o=>secOf(o.id)===s.n);
+ return `<div class="sec"><div class="sh"><span>Section ${s.n}${(S.adj||{})[s.n]!=null?'<span class="tag">edited</span>':''}</span><button class="num" onclick="openEdit(${s.n})">${present(s)}/${s.total}</button></div>`+
+ (outs.length?outs.map(o=>`<div class="out"><span><b>${esc(o.id)}</b> ${esc(o.reason)}${o.time?` <span class="muted">${esc(o.time)}</span>`:''}</span><button onclick="back('${esc(o.id)}')">Back ✓</button></div>`).join(''):'')+(present(s)<autoP(s)?`<div class="muted" style="color:#f0c674">${autoP(s)-present(s)} unaccounted (edited)</div>`:(outs.length?'':'<div class="muted">All present</div>'))+'</div>'}).join('')}
+function drawChips(){chips.innerHTML=REASONS.map(r=>`<button class="${r===reason?'on':''}" onclick="reason='${r}';drawChips()">${r}</button>`).join('');aother.style.display=reason==='Other'?'block':'none'}
+ const r=reason==='Other'?(aother.value.trim()||'Other'):reason.toLowerCase();
+function back(id){S.out=S.out.filter(o=>o.id!==id);save();render()}
+function report(){const lines=S.sections.map(s=>{const outs=S.out.filter(o=>secOf(o.id)===s.n);let l=present(s)+'/'+s.total;if(outs.length){const g=[];outs.forEach(o=>{const r=o.reason+(o.time?' ('+o.time+')':'');let e=g.find(x=>x.r===r);e?e.ids.push(o.id):g.push({r,ids:[o.id]})});l+=' - '+g.map(x=>x.ids.join(', ')+' '+x.r).join(', ')}return l});
+ const[p,t]=totals(),d=new Date(),pad=n=>String(n).padStart(2,'0');
+ return lines.join('\n')+`\n\nTotal: ${p}/${t}\n${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}${pad(d.getMinutes())}hrs`}
+async function copyText(t,msg){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}toast(msg)}
+async function copyReport(){const t=report();await copyText(t,'Report copied');if(navigator.share){try{await navigator.share({text:t})}catch(e){}}}
+function resetDay(){if(confirm('Mark everyone present? Setup is kept.')){S.out=[];S.adj={};save();render()}}
+function code(){return btoa(JSON.stringify({p:S.platoon,s:S.sections.map(s=>[s.n,s.total])}))}
+function openSetup(){splt.value=S.platoon;tmpSecs=S.sections.map(s=>({...s}));drawSecs();scode.value=code();setD.showModal()}
+function drawSecs(){slist.innerHTML=tmpSecs.map((s,i)=>`<div class="row" style="margin:6px 0"><input inputmode="numeric" value="${s.n}" onchange="tmpSecs[${i}].n=+this.value"><input inputmode="numeric" value="${s.total}" onchange="tmpSecs[${i}].total=+this.value"><button class="d" style="flex:0" onclick="tmpSecs.splice(${i},1);drawSecs()">✕</button></div>`).join('')}
+function addSec(){tmpSecs.push({n:(tmpSecs.length?Math.max(...tmpSecs.map(s=>s.n)):0)+1,total:15});drawSecs()}
+function saveSetup(){const p=parseInt(splt.value);if(!(p>=1&&p<=9))return toast('Platoon must be 1-9');const secsOk=tmpSecs.filter(s=>s.n>=1&&s.n<=9&&s.total>0).sort((a,b)=>a.n-b.n);
+ S.platoon=p;S.sections=secsOk;S.out=S.out.filter(o=>String(o.id)[0]==String(p)&&secsOk.some(s=>s.n===secOf(o.id)));save();render();setD.close()}
+function applyCode(c){c=c.trim();let o;try{o=JSON.parse(c)}catch(e){o=JSON.parse(atob(c))}
+ if(o.platoon){S.platoon=o.platoon;S.sections=o.sections}else{S.platoon=o.p;S.sections=o.s.map(([n,total])=>({n,total}))}S.out=[];save();render()}
+function doImport(){const c=prompt('Paste setup code');if(!c)return;try{applyCode(c);setD.close();toast('Setup loaded')}catch(e){toast('Invalid code')}}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',1600)}
+render();
+</script></body></html>
