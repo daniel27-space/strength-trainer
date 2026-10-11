@@ -33,6 +33,7 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 .row{display:flex;gap:8px;align-items:center}.row>*{flex:1}textarea{width:100%;height:110px;font:13px monospace;background:#111813;color:#fff;border-radius:12px;padding:8px}
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#5b8a62;padding:10px 18px;border-radius:20px;display:none;z-index:9}
 .trash{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;color:#e5736b}
+.share{margin-top:16px;border-top:1px solid #2a3a2e;padding-top:12px}.share summary{cursor:pointer;color:#9fb8a4;padding:8px 0;font-size:15px}
 </style></head><body>
 <div class="row"><h1 id="title">Strength Tracker</h1><button style="flex:0" onclick="openSetup()">⚙︎</button></div>
 <div class="total"><b id="tot">0/0</b><small id="totsub"></small></div>
@@ -53,15 +54,15 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 <div class="muted" id="ahint">&nbsp;</div>
 <div class="chips" id="chips"></div>
 <input id="aother" placeholder="Other reason" style="display:none">
-<div class="row" style="margin-top:14px"><button onclick="clearAdj()">Clear</button><button onclick="edD.close()">Cancel</button><button class="p" onclick="saveEdit()">Save</button></div>
+<div class="row" style="margin-top:14px"><button onclick="clearAdj()">Reset section</button><button onclick="edD.close()">Cancel</button><button class="p" onclick="saveEdit()">Save</button></div>
 </form></dialog>
 <dialog id="setD"><form method="dialog" onsubmit="return false">
 <label>Platoon number</label><input id="splt" inputmode="numeric">
 <label>Sections (number → total strength)</label><div id="slist"></div>
 <button onclick="addSec()" style="margin-top:8px">+ Add section</button>
-<label>Share setup code (others paste this into Import)</label>
+<details class="share"><summary>Share with other ICs</summary><label>Setup code (others paste this into Import)</label>
 <textarea id="scode" readonly onclick="this.select()"></textarea>
-<div class="row"><button onclick="copyText(scode.value,'Code copied')">Copy code</button><button onclick="doImport()">Import code</button></div>
+<div class="row"><button type="button" onclick="copyText(scode.value,'Code copied')">Copy code</button><button type="button" onclick="doImport()">Import code</button></div></details>
 <div class="row" style="margin-top:14px"><button onclick="setD.close()">Cancel</button><button class="p" onclick="saveSetup()">Save</button></div>
 </form></dialog>
 
@@ -85,7 +86,7 @@ function setP(v){pend=Math.max(0,Math.min(parseInt(v)||0,autoP(curSec())));drawE
 function stepE(d){setP(pend+d)}
 function commitAdj(){const s=curSec();S.adj=S.adj||{};if(pend>=autoP(s))delete S.adj[edN];else S.adj[edN]=pend;save();render()}
 function saveEdit(){commitAdj();edD.close()}
-function clearAdj(){if(S.adj)delete S.adj[edN];pend=autoP(curSec());save();render();drawEd()}
+function clearAdj(){if(!confirm('Reset Section '+edN+' to full strength and remove everyone out?'))return;const rm=outsOf(edN);S.out=S.out.filter(o=>!rm.includes(o));if(S.adj)delete S.adj[edN];pend=autoP(curSec());save();render();drawEd()}
 function edId(v){v=v.replace(/\D/g,'');if(v.length===1)v='0'+v;if(v.length===2)v=''+S.platoon+edN+v;else if(v.length===3)v=S.platoon+v;return v.length===4?v:null}
 function idHint(){const id=edId(aid.value);let m='&nbsp;';if(id){m=secOf(id)!==edN?'⚠ '+id+' is not section '+edN:id[0]!=String(S.platoon)?'⚠ Not platoon '+S.platoon:`→ ${id}`+(S.out.some(o=>o.id===id)?' (already out)':'')}ahint.innerHTML=m}
 function addOut(){const id=edId(aid.value);if(!id)return toast('Enter man number');if(secOf(id)!==edN||id[0]!=String(S.platoon))return toast(id+' is not in section '+edN);if(S.out.some(o=>o.id===id))return toast(id+' already out');
