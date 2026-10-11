@@ -32,6 +32,7 @@ dialog{background:#1a221d;color:#e8efe9;border:0;border-radius:18px;width:min(94
 dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9fb8a3;font-size:14px}
 .row{display:flex;gap:8px;align-items:center}.row>*{flex:1}textarea{width:100%;height:110px;font:13px monospace;background:#111813;color:#fff;border-radius:12px;padding:8px}
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#5b8a62;padding:10px 18px;border-radius:20px;display:none;z-index:9}
+.trash{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;color:#e5736b}
 </style></head><body>
 <div class="row"><h1 id="title">Strength Tracker</h1><button style="flex:0" onclick="openSetup()">⚙︎</button></div>
 <div class="total"><b id="tot">0/0</b><small id="totsub"></small></div>
@@ -79,7 +80,7 @@ function curSec(){return S.sections.find(x=>x.n===edN)}
 function openEdit(n){edN=n;const s=curSec();pend=present(s);edT.textContent='Section '+n;etot.textContent='/ '+s.total;aid.value='';aother.value='';reason='MC';drawChips();drawEd();edD.showModal()}
 function drawEd(){const s=curSec(),au=autoP(s);pend=Math.max(0,Math.min(pend,au));ep.value=pend;eauto.textContent='Auto: '+au;
  const un=au-pend;ewarn.style.display=un>0?'block':'none';ewarn.textContent=un+' not accounted for - add IDs';
- const o=outsOf(edN);eout.innerHTML=o.length?o.map(x=>`<div class="out"><span><b>${esc(x.id)}</b> ${esc(x.reason)}${x.time?` <span class="muted">${esc(x.time)}</span>`:''}</span><button onclick="edBack('${esc(x.id)}')">Remove</button></div>`).join(''):'<div class="muted">Nobody out</div>';idHint()}
+ const o=outsOf(edN);eout.innerHTML=o.length?o.map(x=>`<div class="out"><span><b>${esc(x.id)}</b> ${esc(x.reason)}${x.time?` <span class="muted">${esc(x.time)}</span>`:''}</span><button onclick="edBack('${esc(x.id)}')" class="trash" aria-label="Remove" title="Remove"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div>`).join(''):'<div class="muted">Nobody out</div>';idHint()}
 function setP(v){pend=Math.max(0,Math.min(parseInt(v)||0,autoP(curSec())));drawEd();if(autoP(curSec())>pend)aid.focus()}
 function stepE(d){setP(pend+d)}
 function commitAdj(){const s=curSec();S.adj=S.adj||{};if(pend>=autoP(s))delete S.adj[edN];else S.adj[edN]=pend;save();render()}
@@ -98,7 +99,7 @@ function render(){
  title.textContent='Platoon '+S.platoon;const[p,t]=totals();tot.textContent=p+'/'+t;totsub.textContent=(t-p)+' out · total platoon strength';
  secs.innerHTML=S.sections.map(s=>{const outs=S.out.filter(o=>secOf(o.id)===s.n);
  return `<div class="sec"><div class="sh"><span>Section ${s.n}${(S.adj||{})[s.n]!=null?'<span class="tag">edited</span>':''}</span><button class="num" onclick="openEdit(${s.n})">${present(s)}/${s.total}</button></div>`+
- (outs.length?outs.map(o=>`<div class="out"><span><b>${esc(o.id)}</b> ${esc(o.reason)}${o.time?` <span class="muted">${esc(o.time)}</span>`:''}</span><button onclick="back('${esc(o.id)}')">Remove</button></div>`).join(''):'')+(present(s)<autoP(s)?`<div class="muted" style="color:#f0c674">${autoP(s)-present(s)} unaccounted (edited)</div>`:(outs.length?'':'<div class="muted">All present</div>'))+'</div>'}).join('')}
+ (outs.length?outs.map(o=>`<div class="out"><span><b>${esc(o.id)}</b> ${esc(o.reason)}${o.time?` <span class="muted">${esc(o.time)}</span>`:''}</span><button onclick="back('${esc(o.id)}')" class="trash" aria-label="Remove" title="Remove"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div>`).join(''):'')+(present(s)<autoP(s)?`<div class="muted" style="color:#f0c674">${autoP(s)-present(s)} unaccounted (edited)</div>`:(outs.length?'':'<div class="muted">All present</div>'))+'</div>'}).join('')}
 function drawChips(){chips.innerHTML=REASONS.map(r=>`<button class="${r===reason?'on':''}" onclick="reason='${r}';drawChips()">${r}</button>`).join('');aother.style.display=reason==='Other'?'block':'none'}
  const r=reason==='Other'?(aother.value.trim()||'Other'):reason.toLowerCase();
 function back(id){S.out=S.out.filter(o=>o.id!==id);save();render()}
