@@ -25,7 +25,7 @@ h1{font-size:18px;margin:12px 0 4px;color:#9fb8a3}
 button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#2b3a2f;color:#e8efe9}
 button.p{background:#5b8a62;color:#fff;font-weight:600}button.d{background:#6b2b2b}
 .bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#0f1512ee}
-.bar button{flex:1}
+.bar button{flex:1;padding:12px 8px;font-size:15px}
 input{font:inherit;width:100%;padding:12px;border-radius:12px;border:1px solid #34443a;background:#111813;color:#fff;min-height:46px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.chips button{padding:10px 12px}.chips .on{background:#5b8a62}
 dialog{background:#1a221d;color:#e8efe9;border:0;border-radius:18px;width:min(94vw,480px);padding:16px}
@@ -35,12 +35,14 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 .trash{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;color:#e5736b}
 .share{margin-top:16px;border-top:1px solid #2a3a2e;padding-top:12px}.share summary{cursor:pointer;color:#9fb8a4;padding:8px 0;font-size:15px}
 .nw{white-space:nowrap;font-size:15px;padding-left:6px;padding-right:6px}
+.foot{text-align:center;margin:18px 0 8px}.foot a{color:#9fb8a3;font-size:14px}#sendSt{text-align:center;margin-top:-4px}
 .gear{flex:0 0 52px;width:52px;height:52px;padding:0;display:inline-flex;align-items:center;justify-content:center}
 </style></head><body>
 <div class="row"><h1 id="title">Strength Tracker</h1><button class="gear" aria-label="Settings" onclick="openSetup()"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
-<div class="total"><b id="tot">0/0</b><small id="totsub"></small></div>
+<div class="total"><b id="tot">0/0</b><small id="totsub"></small><div id="sendSt" class="muted" style="color:#d6e4d8;margin-top:4px"></div></div>
 <div id="secs"></div>
-<div class="bar"><button onclick="copyReport()">Copy report</button><button onclick="resetDay()">Reset day</button></div>
+<div class="foot"><a href="company.html">Company IC view →</a></div>
+<div class="bar"><button onclick="copyReport()">Copy report</button><button id="sendB" class="p" style="display:none" onclick="sendCompany()">Send to company</button><button onclick="resetDay()">Reset day</button></div>
 <div id="toast"></div>
 
 
@@ -65,6 +67,7 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 <details class="share"><summary>Share with other ICs</summary><label>Setup code (others paste this into Import)</label>
 <textarea id="scode" readonly onclick="this.select()"></textarea>
 <div class="row"><button type="button" onclick="copyText(scode.value,'Code copied')">Copy code</button><button type="button" onclick="doImport()">Import code</button></div></details>
+<details class="share"><summary>Company link</summary><label>Company code (same code for all 4 platoons and the company IC, min 6 characters)</label><input id="scomp" autocomplete="off" autocapitalize="off" placeholder="e.g. ask your company IC"><div class="muted" style="margin-top:6px">When set, a “Send to company” button appears. Nothing is sent automatically.</div></details>
 <div class="row" style="margin-top:14px"><button onclick="setD.close()">Cancel</button><button class="p" onclick="saveSetup()">Save</button></div>
 </form></dialog>
 
@@ -99,6 +102,7 @@ function addOut(){const id=edId(aid.value);if(!id)return toast('Enter man number
 function edBack(id){const s=curSec(),un=autoP(s)-pend;S.out=S.out.filter(o=>o.id!==id);if(un<=0)pend=autoP(s);else pend+=0;pend=Math.min(pend+1,autoP(s));commitAdj();drawEd()}
 function totals(){let p=0,t=0;S.sections.forEach(s=>{p+=present(s);t+=s.total});return[p,t]}
 function render(){
+ sendB.style.display=S.company?'':'none';
  title.textContent='Platoon '+S.platoon;const[p,t]=totals();tot.textContent=p+'/'+t;totsub.textContent=(t-p)+' out · total platoon strength';
  secs.innerHTML=S.sections.map(s=>{const outs=S.out.filter(o=>secOf(o.id)===s.n);
  return `<div class="sec"><div class="sh"><span>Section ${s.n}${(S.adj||{})[s.n]!=null?'<span class="tag">edited</span>':''}</span><button class="num" onclick="openEdit(${s.n})">${present(s)}/${s.total}</button></div>`+
@@ -113,14 +117,22 @@ async function copyText(t,msg){try{await navigator.clipboard.writeText(t)}catch(
 async function copyReport(){const t=report();await copyText(t,'Report copied');if(navigator.share){try{await navigator.share({text:t})}catch(e){}}}
 function resetDay(){if(confirm('Mark everyone present? Setup is kept.')){S.out=[];S.adj={};save();render()}}
 function code(){return btoa(JSON.stringify({p:S.platoon,s:S.sections.map(s=>[s.n,s.total])}))}
-function openSetup(){splt.value=S.platoon;tmpSecs=S.sections.map(s=>({...s}));drawSecs();scode.value=code();setD.showModal()}
+function openSetup(){splt.value=S.platoon;scomp.value=S.company||'';tmpSecs=S.sections.map(s=>({...s}));drawSecs();scode.value=code();setD.showModal()}
 function drawSecs(){slist.innerHTML=tmpSecs.map((s,i)=>`<div class="row" style="margin:6px 0"><input inputmode="numeric" value="${s.n}" onchange="tmpSecs[${i}].n=+this.value"><input inputmode="numeric" value="${s.total}" onchange="tmpSecs[${i}].total=+this.value"><button class="d" style="flex:0" onclick="tmpSecs.splice(${i},1);drawSecs()">✕</button></div>`).join('')}
 function addSec(){tmpSecs.push({n:(tmpSecs.length?Math.max(...tmpSecs.map(s=>s.n)):0)+1,total:15});drawSecs()}
-function saveSetup(){const p=parseInt(splt.value);if(!(p>=1&&p<=9))return toast('Platoon must be 1-9');const secsOk=tmpSecs.filter(s=>s.n>=1&&s.n<=9&&s.total>0).sort((a,b)=>a.n-b.n);
+function saveSetup(){const p=parseInt(splt.value);if(!(p>=1&&p<=9))return toast('Platoon must be 1-9');const cc=scomp.value.trim();if(cc&&cc.length<6)return toast('Company code: min 6 characters');S.company=cc;const secsOk=tmpSecs.filter(s=>s.n>=1&&s.n<=9&&s.total>0).sort((a,b)=>a.n-b.n);
  S.platoon=p;S.sections=secsOk;S.out=S.out.filter(o=>String(o.id)[0]==String(p)&&secsOk.some(s=>s.n===secOf(o.id)));save();render();setD.close()}
 function applyCode(c){c=c.trim();let o;try{o=JSON.parse(c)}catch(e){o=JSON.parse(atob(c))}
  if(o.platoon){S.platoon=o.platoon;S.sections=o.sections}else{S.platoon=o.p;S.sections=o.s.map(([n,total])=>({n,total}))}S.out=[];save();render()}
 function doImport(){const c=prompt('Paste setup code');if(!c)return;try{applyCode(c);setD.close();toast('Setup loaded')}catch(e){toast('Invalid code')}}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',1600)}
+const SB='https://vxyeipqfvgyoupecqudb.supabase.co',SBK='sb_publishable_xHaz5dPwP7JCeumZIuiXbA_-hFNGgaR';
+function snapshot(){return{platoon:S.platoon,sections:S.sections.map(s=>({n:s.n,total:s.total,present:present(s),outs:outsOf(s.n).map(o=>({id:o.id,reason:o.reason}))})),report:report()}}
+async function sendCompany(){if(!S.company)return;sendB.disabled=true;sendSt.textContent='Sending…';
+ try{const r=await fetch(SB+'/rest/v1/rpc/send_snapshot',{method:'POST',headers:{apikey:SBK,'Content-Type':'application/json'},body:JSON.stringify({code:S.company,platoon:S.platoon,payload:snapshot()})});
+ if(!r.ok){let m='Send failed';try{m=(await r.json()).message||m}catch(e){}throw new Error(m)}
+ const d=new Date(),pad=n=>String(n).padStart(2,'0');sendSt.textContent='Sent '+pad(d.getHours())+':'+pad(d.getMinutes());toast('Sent to company')}
+ catch(e){sendSt.textContent='⚠ Not sent: '+(e.message&&e.message!=='Failed to fetch'?e.message:'no signal?');toast('Not sent')}
+ sendB.disabled=false}
 render();
 </script></body></html>
