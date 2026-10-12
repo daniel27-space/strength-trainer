@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Company Strength</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Coy Strength">
+<meta name="theme-color" content="#0f1512">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233a5a40'/%3E%3Ctext x='50' y='64' font-size='40' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3ECOY%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233a5a40'/%3E%3Ctext x='50' y='64' font-size='40' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3ECOY%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,system-ui,sans-serif;background:#0f1512;color:#e8efe9;padding:env(safe-area-inset-top) 12px 90px}
+h1{font-size:18px;margin:12px 0 4px;color:#9fb8a3}
+.total{background:#3a5a40;border-radius:16px;padding:16px;text-align:center;margin:8px 0 10px}
+.total b{font-size:48px;display:block}.total small{opacity:.85}
+.rs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}.rs span{background:#1a221d;border-radius:10px;padding:8px 10px;font-size:15px}.rs span b{font-size:17px;margin-left:4px}.rs .z{opacity:.45}.rs .u{background:#5a4a1f}
+.pl{background:#1a221d;border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer}
+.ph{display:flex;justify-content:space-between;align-items:center;font-size:19px}.ph b{font-size:30px}
+.pl .rs{margin:8px 0 0}.pl .rs span{background:#24312a;font-size:13px;padding:5px 8px}.pl .rs span b{font-size:14px}
+.warn{color:#f0c674;font-weight:600}.muted{color:#8a9a8d;font-size:13px}
+.det{display:none;margin-top:8px}.pl.open .det{display:block}
+.sec{border-top:1px solid #2a352d;padding:8px 0}.sec .sh{display:flex;justify-content:space-between;font-size:16px}
+.ids{font-size:14px;color:#cdd9cf;margin-top:2px}
+button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#2b3a2f;color:#e8efe9}
+button.p{background:#5b8a62;color:#fff;font-weight:600}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#0f1512ee}
+.bar button{flex:1;min-height:52px}
+input{font:inherit;width:100%;padding:12px;border-radius:12px;border:1px solid #34443a;background:#111813;color:#fff;min-height:46px}
+label{display:block;margin:10px 0 4px;color:#9fb8a3;font-size:14px}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#5b8a62;padding:10px 18px;border-radius:20px;display:none;z-index:9}
+.gear{flex:0 0 52px;width:52px;height:52px;padding:0}
+.foot{text-align:center;margin:18px 0 8px}.foot a{color:#9fb8a3;font-size:14px}
+.card{background:#1a221d;border-radius:16px;padding:16px;margin-top:20px}
+</style></head><body>
+<div class="row"><h1>Company Strength</h1><button class="gear" aria-label="Change company code" onclick="changeCode()">⚙︎</button></div>
+<div id="setup" class="card" style="display:none">
+<h1 style="margin-top:0">Enter company code</h1>
+<div class="muted">The same code every platoon IC puts in their app (Settings → Company link).</div>
+<label>Company code</label><input id="cin" autocomplete="off" autocapitalize="off">
+<button class="p" style="width:100%;margin-top:12px" onclick="saveCode()">Save</button>
+</div>
+<div id="main" style="display:none">
+<div class="total"><b id="tot">–</b><small id="totsub">Tap Refresh to load</small></div>
+<div class="rs" id="rs"></div>
+<div id="pls"></div>
+</div>
+<div class="foot"><a href="index.html">← Platoon tracker</a></div>
+<div class="bar" id="bar" style="display:none"><button class="p" id="refB" onclick="refresh()">Refresh</button><button onclick="copyReport()">Copy company report</button></div>
+<div id="toast"></div>
+<script>
+const SB='https://vxyeipqfvgyoupecqudb.supabase.co',SBK='sb_publishable_xHaz5dPwP7JCeumZIuiXbA_-hFNGgaR';
+const KEY='strengthTracker.company.v1',CATS=['MC','Ammo','Physio','Break','Other'],PLATOONS=[1,2,3,4],STALE=30*60*1000;
+let C=load();
+function load(){try{const c=JSON.parse(localStorage.getItem(KEY));if(c)return c}catch(e){}return{code:'',rows:null,fetched:null}}
+function save(){localStorage.setItem(KEY,JSON.stringify(C))}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const pad=n=>String(n).padStart(2,'0'),hm=d=>pad(d.getHours())+':'+pad(d.getMinutes());
+function cat(r){r=String(r||'').toLowerCase();return r==='mc'?'MC':r==='ammo'?'Ammo':r==='physio'?'Physio':r==='break'?'Break':'Other'}
+function zero(){const o={};CATS.forEach(c=>o[c]=0);o.Unaccounted=0;return o}
+function sumP(p){const c=zero();let pr=0,t=0;(p.sections||[]).forEach(s=>{const outs=s.outs||[];pr+=+s.present||0;t+=+s.total||0;outs.forEach(o=>c[cat(o.reason)]++);c.Unaccounted+=Math.max(0,(+s.total||0)-(+s.present||0)-outs.length)});return{p:pr,t,c}}
+function chips(c,cls){return CATS.concat('Unaccounted').map(k=>`<span class="${c[k]?(k==='Unaccounted'?'u':''):'z'}">${k==='Unaccounted'?'Unacc.':k}<b>${c[k]}</b></span>`).join('')}
+function show(){const has=!!C.code;setup.style.display=has?'none':'block';main.style.display=has?'block':'none';bar.style.display=has?'flex':'none';if(has)render()}
+function saveCode(){const v=cin.value.trim();if(v.length<6)return toast('Min 6 characters');C.code=v;C.rows=null;C.fetched=null;save();show();refresh()}
+function changeCode(){cin.value=C.code||'';C.code='';setup.style.display='block';main.style.display='none';bar.style.display='none'}
+function plist(){const rows=C.rows||[],ns=new Set(PLATOONS);rows.forEach(r=>ns.add(r.platoon));return[...ns].sort((a,b)=>a-b).map(n=>({n,row:rows.find(r=>r.platoon===n)}))}
+function render(){
+ if(!C.rows){tot.textContent='–';totsub.textContent='Tap Refresh to load';rs.innerHTML='';pls.innerHTML='';return}
+ const all=zero();let P=0,T=0;const now=Date.now();
+ pls.innerHTML=plist().map(({n,row})=>{
+  if(!row)return `<div class="pl"><div class="ph"><span>Platoon ${n}</span><b>–</b></div><div class="warn">⚠ Not sent yet</div></div>`;
+  const s=sumP(row.payload),at=new Date(row.sent_at),old=now-at>STALE;P+=s.p;T+=s.t;for(const k in all)all[k]+=s.c[k];
+  const secs=(row.payload.sections||[]).map(x=>{const outs=x.outs||[];const un=Math.max(0,x.total-x.present-outs.length);return `<div class="sec"><div class="sh"><span>Section ${esc(x.n)}</span><b>${esc(x.present)}/${esc(x.total)}</b></div>${outs.length?`<div class="ids">${outs.map(o=>`<b>${esc(o.id)}</b> ${esc(o.reason)}`).join(' · ')}</div>`:''}${un?`<div class="warn" style="font-size:13px">${un} unaccounted</div>`:''}${!outs.length&&!un?'<div class="muted">All present</div>':''}</div>`}).join('');
+  return `<div class="pl${C.open==n?' open':''}" onclick="toggle(${n})"><div class="ph"><span>Platoon ${n}</span><b>${s.p}/${s.t}</b></div><div class="${old?'warn':'muted'}">${old?'⚠ ':''}Last sent ${(new Date(now).toDateString()===at.toDateString())?hm(at):pad(at.getDate())+'/'+pad(at.getMonth()+1)+' '+hm(at)}${old?' (over 30 min ago)':''}</div><div class="rs">${chips(s.c)}</div><div class="det">${secs}</div></div>`}).join('');
+ tot.textContent=P+'/'+T;totsub.textContent=(T-P)+' out · Updated '+(C.fetched?hm(new Date(C.fetched)):'–');rs.innerHTML=chips(all)}
+function toggle(n){C.open=C.open==n?null:n;save();render()}
+async function refresh(){if(!C.code)return;refB.disabled=true;refB.textContent='Loading…';
+ try{const r=await fetch(SB+'/rest/v1/rpc/get_company',{method:'POST',headers:{apikey:SBK,'Content-Type':'application/json'},body:JSON.stringify({code:C.code})});
+  if(!r.ok)throw new Error('Server error '+r.status);C.rows=await r.json();C.fetched=Date.now();save();render();toast(C.rows.length?'Updated':'No platoons have sent with this code')}
+ catch(e){toast('Could not refresh – no signal?')}
+ refB.disabled=false;refB.textContent='Refresh'}
+function report(){if(!C.rows)return '';const d=new Date(),all=zero();let P=0,T=0;
+ const lines=plist().map(({n,row})=>{if(!row)return `Plt ${n}: not sent`;const s=sumP(row.payload);P+=s.p;T+=s.t;for(const k in all)all[k]+=s.c[k];
+  const parts=CATS.concat('Unaccounted').filter(k=>s.c[k]).map(k=>s.c[k]+' '+k);return `Plt ${n}: ${s.p}/${s.t}`+(parts.length?' - '+parts.join(', '):'')+` (sent ${hm(new Date(row.sent_at))})`});
+ const rt=CATS.concat('Unaccounted').filter(k=>all[k]).map(k=>k+': '+all[k]);
+ return `Company strength: ${P}/${T}\n\n`+lines.join('\n')+(rt.length?'\n\n'+rt.join('\n'):'')+`\n\n${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}${pad(d.getMinutes())}hrs`}
+async function copyText(t,msg){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}toast(msg)}
+async function copyReport(){const t=report();if(!t)return toast('Refresh first');await copyText(t,'Report copied');if(navigator.share){try{await navigator.share({text:t})}catch(e){}}}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',1800)}
+show();
+</script></body></html>
