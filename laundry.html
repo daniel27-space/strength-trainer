@@ -16,7 +16,7 @@ h1{font-size:18px;margin:12px 0 4px;color:#9fb8a3}h2{font-size:15px;color:#9fb8a
 .dot{width:12px;height:12px;border-radius:6px;flex:0 0 12px}.r{background:#c0473f}.a{background:#d19a2a}.g{background:#5b8a62}
 .sum.r{background:#6b2b2b}.sum.a{background:#7a5a1c}.sum.g{background:#3a5a40}
 .it .sh{display:flex;justify-content:space-between;align-items:center;font-size:17px;font-weight:600}
-.cnt{display:flex;gap:6px;margin:8px 0}.cnt div{flex:1;background:#111813;border-radius:10px;text-align:center;padding:6px}.cnt b{font-size:24px;display:block}.cnt small{color:#8a9a8d}
+.cnt{display:flex;gap:6px;margin:8px 0}.cnt div{cursor:pointer;flex:1;background:#111813;border-radius:10px;text-align:center;padding:6px}.cnt b{font-size:24px;display:block}.cnt small{color:#8a9a8d}
 .acts{display:flex;gap:6px}.acts button{flex:1;padding:10px 4px;font-size:14px}
 .muted{color:#8a9a8d;font-size:13px}
 button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#2b3a2f;color:#e8efe9}
@@ -50,10 +50,10 @@ a{color:#9fb8a3}.toast{position:fixed;left:50%;bottom:90px;transform:translateX(
 <div id="toast" class="toast"></div>
 <script>
 const K='laundry-v1';
-const DEF=[["PT shorts",4,1,1],["PT shirt",4,1,1],["PT pants",2,0.5,0],["Admin shirt",3,0.5,1],["Admin pants",3,0.5,1],["Admin socks",4,0.5,1],["Boot socks",5,1,1],["No.4 top",3,0.5,1],["No.4 pants",3,0.5,1],["Towel",2,0.5,0]];
+const DEF=[["PT shorts",4,1,1],["PT shirt",4,1,1],["PT pants",2,0.5,0],["Admin shirt",3,0.5,1],["Admin pants",3,0.5,1],["Admin socks",4,0.5,1],["Boot socks",5,1,1],["No.4 top",3,0.5,1],["No.4 pants",3,0.5,1],["Towel",2,0.5,0],["Underwear",7,1,1]];
 let S=load();
 function mk(a){return{id:Math.random().toString(36).slice(2,8),name:a[0],qty:a[1],need:a[2],buf:a[3],clean:a[1],dirty:0,dry:0}}
-function load(){try{const s=JSON.parse(localStorage.getItem(K));if(s&&s.items)return s}catch(e){}return{items:DEF.map(mk)}}
+function load(){try{const s=JSON.parse(localStorage.getItem(K));if(s&&s.items){if(!s.uw){if(!s.items.some(i=>/underwear/i.test(i.name)))s.items.push(mk(["Underwear",7,1,1]));s.uw=1}return s}}catch(e){}return{items:DEF.map(mk),uw:1}}
 function save(){localStorage.setItem(K,JSON.stringify(S))}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',1600)}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
@@ -74,7 +74,7 @@ function render(){
   if(d===Infinity||d>=7)sm.textContent="You're fine for the week";
   else{const day=new Date();day.setDate(day.getDate()+d);sm.textContent=`You're fine until ${DAYS[day.getDay()]} · next: ${w.i.name}`}}
  document.getElementById('items').innerHTML=L.map(({i,f})=>`<div class="sec it"><div class="sh"><span><span class="dot ${f.lvl}" style="display:inline-block;margin-right:6px"></span>${esc(i.name)}</span><span class="muted">${i.qty} total</span></div>
- <div class="cnt"><div><b>${i.clean}</b><small>Clean</small></div><div><b>${i.dirty}</b><small>Dirty</small></div><div><b>${i.dry}</b><small>Drying</small></div></div>
+ <div class="cnt"><div onclick=\"edit('${i.id}','clean')\"><b>${i.clean}</b><small>Clean ✎</small></div><div onclick=\"edit('${i.id}','dirty')\"><b>${i.dirty}</b><small>Dirty ✎</small></div><div onclick=\"edit('${i.id}','dry')\"><b>${i.dry}</b><small>Drying ✎</small></div></div>
  <div class="acts"><button class="p" ${i.clean?'':'disabled'} onclick="act('${i.id}','wore')">👕 Wore one</button><button ${i.dirty?'':'disabled'} onclick="act('${i.id}','wash')">🧺 Wash ${i.dirty}</button><button ${i.dry?'':'disabled'} onclick="act('${i.id}','dry')">☀️ Dry</button></div></div>`).join('')}
 function get(id){return S.items.find(x=>x.id===id)}
 function act(id,a){const i=get(id);
@@ -82,6 +82,7 @@ function act(id,a){const i=get(id);
  if(a==='wash'&&i.dirty){i.dry+=i.dirty;i.dirty=0;toast(i.name+' → drying')}
  if(a==='dry'&&i.dry){i.clean+=i.dry;i.dry=0;toast(i.name+' → clean')}
  save();render()}
+function edit(id,k){const i=get(id);const L={clean:'clean',dirty:'dirty',dry:'drying'}[k];const v=prompt(`How many ${i.name} are ${L}?`,i[k]);if(v===null)return;const n=parseInt(v);if(isNaN(n)||n<0)return toast('Enter a number');i[k]=n;i.qty=i.clean+i.dirty+i.dry;save();render();toast(`${i.name}: ${n} ${L}`)}
 function allDry(){let n=0;S.items.forEach(i=>{n+=i.dry;i.clean+=i.dry;i.dry=0});save();render();toast(n?n+' items now clean':'Nothing drying')}
 let W={};
 function openWash(){W={};S.items.forEach(i=>W[i.id]=i.dirty);drawW();wd.showModal()}
