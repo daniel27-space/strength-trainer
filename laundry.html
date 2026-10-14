@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Laundry Tracker</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Laundry">
+<meta name="theme-color" content="#0f1512">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,system-ui,sans-serif;background:#0f1512;color:#e8efe9;padding:env(safe-area-inset-top) 12px 90px}
+h1{font-size:18px;margin:12px 0 4px;color:#9fb8a3}h2{font-size:15px;color:#9fb8a3;margin:14px 0 6px}
+.sum{border-radius:16px;padding:14px;text-align:center;margin:8px 0 10px;font-size:20px;font-weight:700}
+.sec{background:#1a221d;border-radius:14px;padding:12px;margin-bottom:10px}
+.pr{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #2a352d;font-size:15px}.pr:first-child{border-top:0}
+.dot{width:12px;height:12px;border-radius:6px;flex:0 0 12px}.r{background:#c0473f}.a{background:#d19a2a}.g{background:#5b8a62}
+.sum.r{background:#6b2b2b}.sum.a{background:#7a5a1c}.sum.g{background:#3a5a40}
+.it .sh{display:flex;justify-content:space-between;align-items:center;font-size:17px;font-weight:600}
+.cnt{display:flex;gap:6px;margin:8px 0}.cnt div{flex:1;background:#111813;border-radius:10px;text-align:center;padding:6px}.cnt b{font-size:24px;display:block}.cnt small{color:#8a9a8d}
+.acts{display:flex;gap:6px}.acts button{flex:1;padding:10px 4px;font-size:14px}
+.muted{color:#8a9a8d;font-size:13px}
+button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#2b3a2f;color:#e8efe9}
+button:disabled{opacity:.35}button.p{background:#5b8a62;color:#fff;font-weight:600}button.d{background:#6b2b2b}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#0f1512ee}
+.bar button{flex:1;padding:12px 6px;font-size:15px}
+input{font:inherit;width:100%;padding:10px;border-radius:10px;border:1px solid #34443a;background:#111813;color:#fff;min-height:44px}
+dialog{background:#1a221d;color:#e8efe9;border:0;border-radius:18px;width:min(94vw,480px);padding:16px;max-height:90vh}
+dialog::backdrop{background:#000a}
+.row{display:grid;grid-template-columns:1fr 54px 54px 54px 44px;gap:6px;align-items:center;margin-bottom:6px}.row input{padding:8px 4px;text-align:center}.row input.n{text-align:left;padding:8px}
+.wrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #2a352d}.wrow span{flex:1}.wrow button{flex:0 0 46px;font-size:20px}.wrow b{width:30px;text-align:center}
+a{color:#9fb8a3}.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#5b8a62;padding:10px 16px;border-radius:12px;display:none}
+</style></head><body>
+<h1>Laundry Tracker</h1>
+<div id="sum" class="sum"></div>
+<h2>Wash next</h2><div id="prio" class="sec"></div>
+<h2>Items</h2><div id="items"></div>
+<p class="muted" style="text-align:center"><a href="./index.html">← Strength tracker</a> · saved on this phone only</p>
+<div class="bar"><button class="p" onclick="openWash()">🧺 Washed</button><button onclick="allDry()">☀️ All dry</button><button onclick="openSet()">⚙️ Settings</button></div>
+
+<dialog id="wd"><h3 style="margin-top:0">What did you wash?</h3><div id="wlist"></div>
+<div style="display:flex;gap:8px;margin-top:12px"><button style="flex:1" onclick="wd.close()">Cancel</button><button class="p" style="flex:2" onclick="doWash()">Put in wash</button></div></dialog>
+
+<dialog id="sd"><h3 style="margin-top:0">Settings</h3>
+<div class="row muted"><span>Name</span><span>Qty</span><span>Per day</span><span>Buffer</span><span></span></div>
+<div id="slist"></div>
+<button style="width:100%;margin:6px 0" onclick="addRow()">+ Add item</button>
+<p class="muted">Per day: 1 = one a day, 0.5 = one every 2 days. Buffer = clean spares you always want.</p>
+<button class="d" style="width:100%;margin-bottom:8px" onclick="resetAll()">Reset all clean</button>
+<div style="display:flex;gap:8px"><button style="flex:1" onclick="sd.close()">Cancel</button><button class="p" style="flex:2" onclick="saveSet()">Save</button></div></dialog>
+<div id="toast" class="toast"></div>
+<script>
+const K='laundry-v1';
+const DEF=[["PT shorts",4,1,1],["PT shirt",4,1,1],["PT pants",2,0.5,0],["Admin shirt",3,0.5,1],["Admin pants",3,0.5,1],["Admin socks",4,0.5,1],["Boot socks",5,1,1],["No.4 top",3,0.5,1],["No.4 pants",3,0.5,1],["Towel",2,0.5,0]];
+let S=load();
+function mk(a){return{id:Math.random().toString(36).slice(2,8),name:a[0],qty:a[1],need:a[2],buf:a[3],clean:a[1],dirty:0,dry:0}}
+function load(){try{const s=JSON.parse(localStorage.getItem(K));if(s&&s.items)return s}catch(e){}return{items:DEF.map(mk)}}
+function save(){localStorage.setItem(K,JSON.stringify(S))}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',1600)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function info(i){const n=i.need>0?i.need:0;const c=Math.max(0,i.clean-i.buf);
+ const now=n?c/n:Infinity,soon=n?(c+i.dry)/n:Infinity;
+ const lvl=soon<1?'r':soon<2?'a':'g';return{now,soon,lvl}}
+function line(i,f){let t=`${i.clean} clean`;if(i.dry)t+=`, ${i.dry} drying`;if(i.dirty)t+=`, ${i.dirty} dirty`;
+ let act=f.lvl==='r'?(i.dirty?'wash now':i.dry?'dry them now':'need more'):f.lvl==='a'?(i.dirty?'wash tonight':'ok for now'):(f.soon===Infinity?'not used daily':Math.floor(f.soon)+' days left');
+ return `<b>${esc(i.name)}</b>: ${t} · ${act}`}
+function render(){
+ const L=S.items.map(i=>({i,f:info(i)})).sort((a,b)=>a.f.soon-b.f.soon||a.f.now-b.f.now);
+ document.getElementById('prio').innerHTML=L.slice(0,5).map(({i,f})=>`<div class="pr"><span class="dot ${f.lvl}"></span><span>${line(i,f)}</span></div>`).join('')||'<span class="muted">No items</span>';
+ const w=L[0],sm=document.getElementById('sum');
+ if(!w){sm.className='sum g';sm.textContent='Add items in settings'}
+ else if(w.f.lvl==='r'){sm.className='sum r';sm.textContent=`Wash ${w.i.name.toLowerCase()} tonight`}
+ else{const d=Math.floor(w.f.soon);sm.className='sum '+w.f.lvl;
+  if(d===Infinity||d>=7)sm.textContent="You're fine for the week";
+  else{const day=new Date();day.setDate(day.getDate()+d);sm.textContent=`You're fine until ${DAYS[day.getDay()]} · next: ${w.i.name}`}}
+ document.getElementById('items').innerHTML=L.map(({i,f})=>`<div class="sec it"><div class="sh"><span><span class="dot ${f.lvl}" style="display:inline-block;margin-right:6px"></span>${esc(i.name)}</span><span class="muted">${i.qty} total</span></div>
+ <div class="cnt"><div><b>${i.clean}</b><small>Clean</small></div><div><b>${i.dirty}</b><small>Dirty</small></div><div><b>${i.dry}</b><small>Drying</small></div></div>
+ <div class="acts"><button class="p" ${i.clean?'':'disabled'} onclick="act('${i.id}','wore')">👕 Wore one</button><button ${i.dirty?'':'disabled'} onclick="act('${i.id}','wash')">🧺 Wash ${i.dirty}</button><button ${i.dry?'':'disabled'} onclick="act('${i.id}','dry')">☀️ Dry</button></div></div>`).join('')}
+function get(id){return S.items.find(x=>x.id===id)}
+function act(id,a){const i=get(id);
+ if(a==='wore'&&i.clean){i.clean--;i.dirty++;toast(i.name+' → dirty')}
+ if(a==='wash'&&i.dirty){i.dry+=i.dirty;i.dirty=0;toast(i.name+' → drying')}
+ if(a==='dry'&&i.dry){i.clean+=i.dry;i.dry=0;toast(i.name+' → clean')}
+ save();render()}
+function allDry(){let n=0;S.items.forEach(i=>{n+=i.dry;i.clean+=i.dry;i.dry=0});save();render();toast(n?n+' items now clean':'Nothing drying')}
+let W={};
+function openWash(){W={};S.items.forEach(i=>W[i.id]=i.dirty);drawW();wd.showModal()}
+function drawW(){const d=S.items.filter(i=>i.dirty);document.getElementById('wlist').innerHTML=d.length?d.map(i=>`<div class="wrow"><span>${esc(i.name)} <span class="muted">(${i.dirty} dirty)</span></span><button onclick="wa('${i.id}',-1)">−</button><b>${W[i.id]}</b><button onclick="wa('${i.id}',1)">+</button></div>`).join(''):'<p class="muted">Nothing dirty 🎉</p>'}
+function wa(id,d){const i=get(id);W[id]=Math.max(0,Math.min(i.dirty,W[id]+d));drawW()}
+function doWash(){let n=0;S.items.forEach(i=>{const k=W[i.id]||0;i.dirty-=k;i.dry+=k;n+=k});save();render();wd.close();toast(n+' items in the wash')}
+function rowH(i){return `<div class="row" data-id="${i.id||''}"><input class="n" value="${esc(i.name)}"><input type="number" min="0" value="${i.qty}"><input type="number" min="0" step="0.5" value="${i.need}"><input type="number" min="0" value="${i.buf}"><button class="d" style="min-height:40px;padding:0" onclick="this.parentNode.remove()">✕</button></div>`}
+function openSet(){document.getElementById('slist').innerHTML=S.items.map(rowH).join('');sd.showModal()}
+function addRow(){document.getElementById('slist').insertAdjacentHTML('beforeend',rowH({name:'',qty:2,need:1,buf:0}))}
+function saveSet(){const out=[];document.querySelectorAll('#slist .row').forEach(r=>{const v=[...r.querySelectorAll('input')].map(x=>x.value);const name=v[0].trim();if(!name)return;
+ const qty=Math.max(0,parseInt(v[1])||0),need=Math.max(0,parseFloat(v[2])||0),buf=Math.max(0,parseInt(v[3])||0);
+ let i=r.dataset.id&&get(r.dataset.id);
+ if(i){i.name=name;i.need=need;i.buf=buf;let diff=qty-i.qty;i.qty=qty;
+  if(diff>0)i.clean+=diff;else{diff=-diff;for(const k of['clean','dirty','dry']){const t=Math.min(i[k],diff);i[k]-=t;diff-=t}}}
+ else i=mk([name,qty,need,buf]);out.push(i)});
+ S.items=out;save();render();sd.close();toast('Saved')}
+function resetAll(){if(!confirm('Mark everything as clean?'))return;S.items.forEach(i=>{i.clean=i.qty;i.dirty=0;i.dry=0});save();render();sd.close();toast('All clean')}
+render();
+</script></body></html>
