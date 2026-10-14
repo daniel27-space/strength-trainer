@@ -8,45 +8,65 @@
 <meta name="apple-mobile-web-app-title" content="Laundry">
 <meta name="theme-color" content="#0f1512">
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,system-ui,sans-serif;background:#0f1512;color:#e8efe9;padding:env(safe-area-inset-top) 12px 90px}
-h1{font-size:18px;margin:12px 0 4px;color:#9fb8a3}h2{font-size:15px;color:#9fb8a3;margin:14px 0 6px}
-.sum{border-radius:16px;padding:14px;text-align:center;margin:8px 0 10px;font-size:20px;font-weight:700}
-.sec{background:#1a221d;border-radius:14px;padding:12px;margin-bottom:10px}
-.pr{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #2a352d;font-size:15px}.pr:first-child{border-top:0}
-.dot{width:12px;height:12px;border-radius:6px;flex:0 0 12px}.r{background:#c0473f}.a{background:#d19a2a}.g{background:#5b8a62}
-.sum.r{background:#6b2b2b}.sum.a{background:#7a5a1c}.sum.g{background:#3a5a40}
-.it .sh{display:flex;justify-content:space-between;align-items:center;font-size:17px;font-weight:600}
-.cnt{display:flex;gap:6px;margin:8px 0}.cnt div{cursor:pointer;flex:1;background:#111813;border-radius:10px;text-align:center;padding:6px}.cnt b{font-size:24px;display:block}.cnt small{color:#8a9a8d}
-.acts{display:flex;gap:6px}.acts button{flex:1;padding:10px 4px;font-size:14px}
-.muted{color:#8a9a8d;font-size:13px}
-button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#2b3a2f;color:#e8efe9}
-button:disabled{opacity:.35}button.p{background:#5b8a62;color:#fff;font-weight:600}button.d{background:#6b2b2b}
-.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#0f1512ee}
-.bar button{flex:1;padding:12px 6px;font-size:15px}
-input{font:inherit;width:100%;padding:10px;border-radius:10px;border:1px solid #34443a;background:#111813;color:#fff;min-height:44px}
-dialog{background:#1a221d;color:#e8efe9;border:0;border-radius:18px;width:min(94vw,480px);padding:16px;max-height:90vh}
-dialog::backdrop{background:#000a}
-.row{display:grid;grid-template-columns:1fr 54px 54px 54px 44px;gap:6px;align-items:center;margin-bottom:6px}.row input{padding:8px 4px;text-align:center}.row input.n{text-align:left;padding:8px}
-.wrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #2a352d}.wrow span{flex:1}.wrow button{flex:0 0 46px;font-size:20px}.wrow b{width:30px;text-align:center}
-a{color:#9fb8a3}.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#5b8a62;padding:10px 16px;border-radius:12px;display:none}
+:root{--bg:#0f1512;--card:#1a221d;--line:#26312a;--tx:#e8efe9;--mu:#8a9a8d;--acc:#5b8a62;--g:#6fbf7a;--a:#e0a93a;--b:#5aa9e6;--r:#d9534a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--tx);padding:calc(env(safe-area-inset-top) + 6px) 14px 96px;font-variant-numeric:tabular-nums}
+h1{font-size:22px;margin:10px 2px 10px;font-weight:700}
+h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin:18px 4px 8px;font-weight:600}
+.sum{border-radius:14px;padding:10px 14px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px;transition:background .3s}
+.sum.r{background:#4a2321}.sum.a{background:#4a3a18}.sum.g{background:#22362a}
+.card{background:var(--card);border-radius:14px;overflow:hidden}
+.pr{display:flex;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--line);font-size:14px}.pr:first-child{border-top:0}
+.pr .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pr .h{color:var(--mu);font-size:13px}
+.dot{width:10px;height:10px;border-radius:50%;flex:0 0 10px;transition:background .3s}.dot.r{background:var(--r)}.dot.a{background:var(--a)}.dot.g{background:var(--acc)}
+.row{display:flex;align-items:center;gap:12px;height:56px;padding:0 14px;border-top:1px solid var(--line);cursor:pointer;transition:background .15s}
+.row:first-child{border-top:0}.row:active{background:#222c25}
+.row .nm{flex:1;min-width:0;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chips{display:flex;gap:5px}
+.chip{min-width:34px;height:26px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:0 8px;transition:opacity .2s}
+.chip.c{background:#1f3a26;color:var(--g)}.chip.d{background:#3d3018;color:var(--a)}.chip.w{background:#16304a;color:var(--b)}.chip.z{opacity:.28}
+.legend{display:flex;justify-content:flex-end;gap:5px;padding:0 14px 6px;font-size:11px;color:var(--mu)}.legend span{min-width:34px;text-align:center}
+.muted{color:var(--mu);font-size:13px}
+button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#26332a;color:var(--tx);cursor:pointer;transition:transform .12s,background .15s,opacity .15s}
+button:active{transform:scale(.95)}button:disabled{opacity:.3}
+button.p{background:var(--acc);color:#fff;font-weight:600}button.dg{background:#4a2321;color:#ffb3ad}button.gh{background:transparent;color:var(--mu)}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.bar button{flex:1;font-size:16px}.bar button.p{flex:2}
+a{color:#9fb8a3}
+.toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,10px);background:#2f4a36;padding:9px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+/* sheet */
+.bd{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .25s;z-index:20}
+.bd.on{opacity:.55;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:520px;background:#18201b;border-radius:20px 20px 0 0;padding:8px 18px calc(16px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:30;max-height:88vh;overflow-y:auto}
+.sheet.on{transform:none}
+.grab{width:38px;height:5px;border-radius:3px;background:#3a473e;margin:0 auto 10px}
+.sheet h3{margin:0 0 2px;font-size:20px;text-align:center}.sheet .sub{text-align:center;margin-bottom:10px}
+.st{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.sub+.st{border-top:0}
+.st .lb{flex:1;font-size:16px;display:flex;align-items:center;gap:8px}
+.st .lb i{width:10px;height:10px;border-radius:50%}
+.rb{width:46px;height:46px;min-height:0;border-radius:50%;padding:0;font-size:24px;line-height:1;background:#26332a}
+.st .v{width:52px;text-align:center;font-size:28px;font-weight:700}
+.qa{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0 10px}.qa button{font-size:14px;padding:10px 4px}
+.full{width:100%}
+.srow{display:grid;grid-template-columns:28px 1fr 46px 46px 46px 34px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.srow.hd{border-top:0;font-size:11px;color:var(--mu);text-align:center;padding:0 0 4px}
+.srow input{font:inherit;font-size:15px;width:100%;min-width:0;padding:8px 4px;border-radius:9px;border:1px solid #2f3c33;background:#111813;color:#fff;text-align:center;height:38px}
+.srow input.n{text-align:left;padding:8px}
+.arw{display:flex;flex-direction:column;gap:2px}.arw button,.srow .x{min-height:0;height:18px;padding:0;font-size:11px;border-radius:5px;background:#222c25}
+.srow .x{height:34px;font-size:14px;background:transparent;color:#d9837c}
 </style></head><body>
-<h1>Laundry Tracker</h1>
+<h1>Laundry</h1>
 <div id="sum" class="sum"></div>
-<h2>Wash next</h2><div id="prio" class="sec"></div>
-<h2>Items</h2><div id="items"></div>
-<p class="muted" style="text-align:center"><a href="./index.html">← Strength tracker</a> · saved on this phone only</p>
-<div class="bar"><button class="p" onclick="openWash()">🧺 Washed</button><button onclick="allDry()">☀️ All dry</button><button onclick="openSet()">⚙️ Settings</button></div>
+<h2>Wash next</h2><div id="prio" class="card"></div>
+<h2>Items</h2>
+<div class="legend"><span>clean</span><span>dirty</span><span>drying</span></div>
+<div id="items" class="card"></div>
+<p class="muted" style="text-align:center;margin-top:18px"><a href="./index.html">← Strength tracker</a> · saved on this phone only</p>
+<div class="bar"><button class="p" onclick="openWash()">🧺 Washed</button><button onclick="openSet()">⚙️ Settings</button></div>
 
-<dialog id="wd"><h3 style="margin-top:0">What did you wash?</h3><div id="wlist"></div>
-<div style="display:flex;gap:8px;margin-top:12px"><button style="flex:1" onclick="wd.close()">Cancel</button><button class="p" style="flex:2" onclick="doWash()">Put in wash</button></div></dialog>
-
-<dialog id="sd"><h3 style="margin-top:0">Settings</h3>
-<div class="row muted"><span>Name</span><span>Qty</span><span>Per day</span><span>Buffer</span><span></span></div>
-<div id="slist"></div>
-<button style="width:100%;margin:6px 0" onclick="addRow()">+ Add item</button>
-<p class="muted">Per day: 1 = one a day, 0.5 = one every 2 days. Buffer = clean spares you always want.</p>
-<button class="d" style="width:100%;margin-bottom:8px" onclick="resetAll()">Reset all clean</button>
-<div style="display:flex;gap:8px"><button style="flex:1" onclick="sd.close()">Cancel</button><button class="p" style="flex:2" onclick="saveSet()">Save</button></div></dialog>
+<div id="bd" class="bd" onclick="closeSheet()"></div>
+<div id="sheet" class="sheet" role="dialog" aria-modal="true"></div>
 <div id="toast" class="toast"></div>
 <script>
 const K='laundry-v1';
@@ -55,50 +75,84 @@ let S=load();
 function mk(a){return{id:Math.random().toString(36).slice(2,8),name:a[0],qty:a[1],need:a[2],buf:a[3],clean:a[1],dirty:0,dry:0}}
 function load(){try{const s=JSON.parse(localStorage.getItem(K));if(s&&s.items){if(!s.uw){if(!s.items.some(i=>/underwear/i.test(i.name)))s.items.push(mk(["Underwear",7,1,1]));s.uw=1}return s}}catch(e){}return{items:DEF.map(mk),uw:1}}
 function save(){localStorage.setItem(K,JSON.stringify(S))}
-function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',1600)}
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1500)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function buzz(){try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 function info(i){const n=i.need>0?i.need:0;const c=Math.max(0,i.clean-i.buf);
  const now=n?c/n:Infinity,soon=n?(c+i.dry)/n:Infinity;
- const lvl=soon<1?'r':soon<2?'a':'g';return{now,soon,lvl}}
-function line(i,f){let t=`${i.clean} clean`;if(i.dry)t+=`, ${i.dry} drying`;if(i.dirty)t+=`, ${i.dirty} dirty`;
- let act=f.lvl==='r'?(i.dirty?'wash now':i.dry?'dry them now':'need more'):f.lvl==='a'?(i.dirty?'wash tonight':'ok for now'):(f.soon===Infinity?'not used daily':Math.floor(f.soon)+' days left');
- return `<b>${esc(i.name)}</b>: ${t} · ${act}`}
+ return{now,soon,lvl:soon<1?'r':soon<2?'a':'g'}}
+function hint(i,f){return f.lvl==='r'?(i.dirty?'wash now':i.dry?'dry them now':'need more'):(i.dirty?'wash tonight':'ok for now')}
+function get(id){return S.items.find(x=>x.id===id)}
 function render(){
  const L=S.items.map(i=>({i,f:info(i)})).sort((a,b)=>a.f.soon-b.f.soon||a.f.now-b.f.now);
- document.getElementById('prio').innerHTML=L.slice(0,5).map(({i,f})=>`<div class="pr"><span class="dot ${f.lvl}"></span><span>${line(i,f)}</span></div>`).join('')||'<span class="muted">No items</span>';
- const w=L[0],sm=document.getElementById('sum');
- if(!w){sm.className='sum g';sm.textContent='Add items in settings'}
- else if(w.f.lvl==='r'){sm.className='sum r';sm.textContent=`Wash ${w.i.name.toLowerCase()} tonight`}
- else{const d=Math.floor(w.f.soon);sm.className='sum '+w.f.lvl;
-  if(d===Infinity||d>=7)sm.textContent="You're fine for the week";
-  else{const day=new Date();day.setDate(day.getDate()+d);sm.textContent=`You're fine until ${DAYS[day.getDay()]} · next: ${w.i.name}`}}
- document.getElementById('items').innerHTML=L.map(({i,f})=>`<div class="sec it"><div class="sh"><span><span class="dot ${f.lvl}" style="display:inline-block;margin-right:6px"></span>${esc(i.name)}</span><span class="muted">${i.qty} total</span></div>
- <div class="cnt"><div onclick=\"edit('${i.id}','clean')\"><b>${i.clean}</b><small>Clean ✎</small></div><div onclick=\"edit('${i.id}','dirty')\"><b>${i.dirty}</b><small>Dirty ✎</small></div><div onclick=\"edit('${i.id}','dry')\"><b>${i.dry}</b><small>Drying ✎</small></div></div>
- <div class="acts"><button class="p" ${i.clean?'':'disabled'} onclick="act('${i.id}','wore')">👕 Wore one</button><button ${i.dirty?'':'disabled'} onclick="act('${i.id}','wash')">🧺 Wash ${i.dirty}</button><button ${i.dry?'':'disabled'} onclick="act('${i.id}','dry')">☀️ Dry</button></div></div>`).join('')}
-function get(id){return S.items.find(x=>x.id===id)}
-function act(id,a){const i=get(id);
+ const att=L.filter(x=>x.f.lvl!=='g').slice(0,3);
+ document.getElementById('prio').innerHTML=att.length?att.map(({i,f})=>`<div class="pr"><span class="dot ${f.lvl}"></span><span class="t"><b>${esc(i.name)}</b> <span class="h">· ${i.clean} clean</span></span><span class="h">${hint(i,f)}</span></div>`).join(''):'<div class="pr"><span class="dot g"></span><span class="t">All good</span></div>';
+ const w=L[0],sm=document.getElementById('sum');let t,c;
+ if(!w){c='g';t='Add items in settings'}
+ else if(w.f.lvl==='r'){c='r';t=`Wash ${w.i.name.toLowerCase()} tonight`}
+ else{c=w.f.lvl;const d=Math.floor(w.f.soon);
+  if(d===Infinity||d>=7)t="You're fine for the week";
+  else{const day=new Date();day.setDate(day.getDate()+d);t=`Fine until ${DAYS[day.getDay()]} · next: ${w.i.name}`}}
+ sm.className='sum '+c;sm.innerHTML=`<span class="dot ${c}"></span><span>${esc(t)}</span>`;
+ const ch=(v,k)=>`<span class="chip ${k}${v?'':' z'}">${v}</span>`;
+ // fixed stored order: never sorted
+ document.getElementById('items').innerHTML=S.items.map(i=>`<div class="row" data-id="${i.id}" onclick="openItem('${i.id}')"><span class="dot ${info(i).lvl}"></span><span class="nm">${esc(i.name)}</span><span class="chips">${ch(i.clean,'c')}${ch(i.dirty,'d')}${ch(i.dry,'w')}</span></div>`).join('')||'<div class="pr muted">No items. Add some in Settings.</div>';
+}
+/* sheet plumbing */
+const sh=document.getElementById('sheet'),bd=document.getElementById('bd');let onClose=null;
+function openSheet(html,cb){sh.innerHTML='<div class="grab"></div>'+html;onClose=cb||null;sh.scrollTop=0;requestAnimationFrame(()=>{bd.classList.add('on');sh.classList.add('on')})}
+function closeSheet(){bd.classList.remove('on');sh.classList.remove('on');const f=onClose;onClose=null;f&&f()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sh.classList.contains('on'))closeSheet()});
+const LB={clean:['Clean','var(--g)'],dirty:['Dirty','var(--a)'],dry:['Drying','var(--b)']};
+function stepper(k,v,fn,max){return `<div class="st"><span class="lb"><i style="background:${LB[k][1]}"></i>${LB[k][0]}</span><button class="rb" ${v<=0?'disabled':''} onclick="${fn}('${k}',-1)" aria-label="minus">−</button><span class="v" id="v-${k}">${v}</span><button class="rb" ${max!=null&&v>=max?'disabled':''} onclick="${fn}('${k}',1)" aria-label="plus">+</button></div>`}
+/* item sheet */
+let cur=null;
+function openItem(id){cur=id;openSheet('<div id="ib"></div>',()=>{cur=null});drawItem()}
+function drawItem(){const i=get(cur);if(!i)return;
+ document.getElementById('ib').innerHTML=`<h3>${esc(i.name)}</h3><div class="sub muted">${i.qty} total</div>
+ ${stepper('clean',i.clean,'stp')}${stepper('dirty',i.dirty,'stp')}${stepper('dry',i.dry,'stp')}
+ <div class="qa"><button class="p" ${i.clean?'':'disabled'} onclick="act('wore')">👕 Wore one</button><button ${i.dirty?'':'disabled'} onclick="act('wash')">🧺 Wash all dirty</button><button ${i.dry?'':'disabled'} onclick="act('dry')">☀️ All dry</button></div>
+ <button class="full" onclick="closeSheet()">Done</button>`}
+function stp(k,d){const i=get(cur);i[k]=Math.max(0,i[k]+d);i.qty=i.clean+i.dirty+i.dry;buzz();save();render();drawItem()}
+function act(a){const i=get(cur);
  if(a==='wore'&&i.clean){i.clean--;i.dirty++;toast(i.name+' → dirty')}
  if(a==='wash'&&i.dirty){i.dry+=i.dirty;i.dirty=0;toast(i.name+' → drying')}
  if(a==='dry'&&i.dry){i.clean+=i.dry;i.dry=0;toast(i.name+' → clean')}
- save();render()}
-function edit(id,k){const i=get(id);const L={clean:'clean',dirty:'dirty',dry:'drying'}[k];const v=prompt(`How many ${i.name} are ${L}?`,i[k]);if(v===null)return;const n=parseInt(v);if(isNaN(n)||n<0)return toast('Enter a number');i[k]=n;i.qty=i.clean+i.dirty+i.dry;save();render();toast(`${i.name}: ${n} ${L}`)}
-function allDry(){let n=0;S.items.forEach(i=>{n+=i.dry;i.clean+=i.dry;i.dry=0});save();render();toast(n?n+' items now clean':'Nothing drying')}
+ buzz();save();render();drawItem()}
+/* washed sheet */
 let W={};
-function openWash(){W={};S.items.forEach(i=>W[i.id]=i.dirty);drawW();wd.showModal()}
-function drawW(){const d=S.items.filter(i=>i.dirty);document.getElementById('wlist').innerHTML=d.length?d.map(i=>`<div class="wrow"><span>${esc(i.name)} <span class="muted">(${i.dirty} dirty)</span></span><button onclick="wa('${i.id}',-1)">−</button><b>${W[i.id]}</b><button onclick="wa('${i.id}',1)">+</button></div>`).join(''):'<p class="muted">Nothing dirty 🎉</p>'}
-function wa(id,d){const i=get(id);W[id]=Math.max(0,Math.min(i.dirty,W[id]+d));drawW()}
-function doWash(){let n=0;S.items.forEach(i=>{const k=W[i.id]||0;i.dirty-=k;i.dry+=k;n+=k});save();render();wd.close();toast(n+' items in the wash')}
-function rowH(i){return `<div class="row" data-id="${i.id||''}"><input class="n" value="${esc(i.name)}"><input type="number" min="0" value="${i.qty}"><input type="number" min="0" step="0.5" value="${i.need}"><input type="number" min="0" value="${i.buf}"><button class="d" style="min-height:40px;padding:0" onclick="this.parentNode.remove()">✕</button></div>`}
-function openSet(){document.getElementById('slist').innerHTML=S.items.map(rowH).join('');sd.showModal()}
-function addRow(){document.getElementById('slist').insertAdjacentHTML('beforeend',rowH({name:'',qty:2,need:1,buf:0}))}
-function saveSet(){const out=[];document.querySelectorAll('#slist .row').forEach(r=>{const v=[...r.querySelectorAll('input')].map(x=>x.value);const name=v[0].trim();if(!name)return;
- const qty=Math.max(0,parseInt(v[1])||0),need=Math.max(0,parseFloat(v[2])||0),buf=Math.max(0,parseInt(v[3])||0);
- let i=r.dataset.id&&get(r.dataset.id);
+function openWash(){W={};S.items.forEach(i=>W[i.id]=i.dirty);openSheet('<div id="wb"></div>');drawW()}
+function drawW(){const d=S.items.filter(i=>i.dirty),dr=S.items.reduce((s,i)=>s+i.dry,0);
+ document.getElementById('wb').innerHTML=`<h3>What did you wash?</h3><div class="sub muted">Moves them from dirty to drying</div>`+
+ (d.length?d.map(i=>`<div class="st"><span class="lb" style="flex-direction:column;align-items:flex-start;gap:0">${esc(i.name)}<span class="muted">${i.dirty} dirty</span></span><button class="rb" ${W[i.id]<=0?'disabled':''} onclick="wa('${i.id}',-1)">−</button><span class="v">${W[i.id]}</span><button class="rb" ${W[i.id]>=i.dirty?'disabled':''} onclick="wa('${i.id}',1)">+</button></div>`).join(''):'<p class="muted" style="text-align:center">Nothing dirty 🎉</p>')+
+ `<button class="p full" style="margin-top:12px" ${d.length?'':'disabled'} onclick="doWash()">Put in wash</button>
+ <div style="display:flex;gap:8px;margin-top:8px"><button style="flex:1" ${dr?'':'disabled'} onclick="allDry()">☀️ All dry (${dr})</button><button class="gh" style="flex:1" onclick="closeSheet()">Cancel</button></div>`}
+function wa(id,d){const i=get(id);W[id]=Math.max(0,Math.min(i.dirty,W[id]+d));buzz();drawW()}
+function doWash(){let n=0;S.items.forEach(i=>{const k=Math.min(W[i.id]||0,i.dirty);i.dirty-=k;i.dry+=k;n+=k});save();render();closeSheet();toast(n+' items in the wash')}
+function allDry(){let n=0;S.items.forEach(i=>{n+=i.dry;i.clean+=i.dry;i.dry=0});save();render();closeSheet();toast(n?n+' items now clean':'Nothing drying')}
+/* settings sheet: edits a draft, Save applies */
+let D=[],confirmReset=false;
+function openSet(){D=S.items.map(i=>({id:i.id,name:i.name,qty:i.qty,need:i.need,buf:i.buf}));confirmReset=false;openSheet('<div id="sb"></div>');drawSet()}
+function grab(){document.querySelectorAll('#sb .srow[data-i]').forEach(r=>{const x=D[+r.dataset.i],v=[...r.querySelectorAll('input')].map(e=>e.value);x.name=v[0];x.qty=v[1];x.need=v[2];x.buf=v[3]})}
+function drawSet(){document.getElementById('sb').innerHTML=`<h3>Settings</h3><div class="sub muted">Reorder with the arrows</div>
+ <div class="srow hd"><span></span><span style="text-align:left">Name</span><span>Total</span><span>Per day</span><span>Buffer</span><span></span></div>
+ ${D.map((x,k)=>`<div class="srow" data-i="${k}"><span class="arw"><button ${k?'':'disabled'} onclick="mv(${k},-1)" aria-label="up">▲</button><button ${k<D.length-1?'':'disabled'} onclick="mv(${k},1)" aria-label="down">▼</button></span><input class="n" value="${esc(x.name)}" placeholder="Item name"><input type="number" inputmode="numeric" min="0" value="${x.qty}"><input type="number" inputmode="decimal" min="0" step="0.5" value="${x.need}"><input type="number" inputmode="numeric" min="0" value="${x.buf}"><button class="x" onclick="del(${k})" aria-label="delete">✕</button></div>`).join('')}
+ <button class="full" style="margin:10px 0 6px" onclick="addRow()">+ Add item</button>
+ <p class="muted">Per day: 1 = one a day, 0.5 = one every 2 days. Buffer = clean spares you always want.</p>
+ <button class="dg full" style="margin-bottom:10px" onclick="resetAll()">${confirmReset?'Tap again to mark everything clean':'Reset all clean'}</button>
+ <div style="display:flex;gap:8px"><button class="gh" style="flex:1" onclick="closeSheet()">Cancel</button><button class="p" style="flex:2" onclick="saveSet()">Save</button></div>`}
+function mv(k,d){grab();const t=D[k];D[k]=D[k+d];D[k+d]=t;buzz();drawSet()}
+function del(k){grab();D.splice(k,1);drawSet()}
+function addRow(){grab();D.push({id:'',name:'',qty:2,need:1,buf:0});drawSet();const ins=document.querySelectorAll('#sb input.n');ins[ins.length-1].focus()}
+function saveSet(){grab();const out=[];D.forEach(x=>{const name=String(x.name).trim();if(!name)return;
+ const qty=Math.max(0,parseInt(x.qty)||0),need=Math.max(0,parseFloat(x.need)||0),buf=Math.max(0,parseInt(x.buf)||0);
+ let i=x.id&&get(x.id);
  if(i){i.name=name;i.need=need;i.buf=buf;let diff=qty-i.qty;i.qty=qty;
   if(diff>0)i.clean+=diff;else{diff=-diff;for(const k of['clean','dirty','dry']){const t=Math.min(i[k],diff);i[k]-=t;diff-=t}}}
  else i=mk([name,qty,need,buf]);out.push(i)});
- S.items=out;save();render();sd.close();toast('Saved')}
-function resetAll(){if(!confirm('Mark everything as clean?'))return;S.items.forEach(i=>{i.clean=i.qty;i.dirty=0;i.dry=0});save();render();sd.close();toast('All clean')}
+ S.items=out;save();render();closeSheet();toast('Saved')}
+function resetAll(){if(!confirmReset){grab();confirmReset=true;drawSet();return}
+ S.items.forEach(i=>{i.clean=i.qty;i.dirty=0;i.dry=0});save();render();closeSheet();toast('All clean')}
 render();
 </script></body></html>
