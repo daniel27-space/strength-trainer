@@ -55,13 +55,23 @@ a{color:#9fb8a3}
 .srow input.n{text-align:left;padding:8px}
 .arw{display:flex;flex-direction:column;gap:2px}.arw button,.srow .x{min-height:0;height:18px;padding:0;font-size:11px;border-radius:5px;background:#222c25}
 .srow .x{height:34px;font-size:14px;background:transparent;color:#d9837c}
+.gh2{display:flex;align-items:center;gap:6px;margin:18px 4px 7px;cursor:pointer;user-select:none;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);font-weight:600}
+.gh2 .cv{display:inline-block;transition:transform .2s;font-size:10px}.gh2.cl .cv{transform:rotate(-90deg)}
+.gh2 .gs{margin-left:auto;text-transform:none;letter-spacing:0;font-size:12px;font-weight:600}.gs.d{color:var(--a)}.gs.w{color:var(--b)}.gs.ok{color:var(--mu);opacity:.6}
+.gh2.cl+.card,.gh2.cl+.gbody{display:none}
+.sheet .gh2{margin:14px 0 4px}
+.sheet .card{background:#1f2822;padding:0 12px}.sheet .card .st:first-child{border-top:0}
+.wfoot{position:sticky;bottom:calc(-16px - env(safe-area-inset-bottom));background:#18201b;margin:0 -18px;padding:10px 18px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -8px 12px #18201b}
+.sgh{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);font-weight:600;margin:14px 0 2px}
+
+.srow select{grid-column:2/6;font:inherit;font-size:13px;height:32px;border-radius:9px;border:1px solid #2f3c33;background:#111813;color:var(--mu);padding:0 6px}
 </style></head><body>
 <h1>Laundry</h1>
 <div id="sum" class="sum"></div>
 <h2>Wash next</h2><div id="prio" class="card"></div>
 <h2>Items</h2>
 <div class="legend"><span>clean</span><span>dirty</span><span>drying</span></div>
-<div id="items" class="card"></div>
+<div id="items"></div>
 <p class="muted" style="text-align:center;margin-top:18px"><a href="./index.html">← Strength tracker</a> · saved on this phone only</p>
 <div class="bar"><button class="p" onclick="openWash()">🧺 Washed</button><button onclick="openSet()">⚙️ Settings</button></div>
 
@@ -71,9 +81,20 @@ a{color:#9fb8a3}
 <script>
 const K='laundry-v1';
 const DEF=[["PT shorts",4,1,1],["PT shirt",4,1,1],["PT pants",2,0.5,0],["Admin shirt",3,0.5,1],["Admin pants",3,0.5,1],["Admin socks",4,0.5,1],["Boot socks",5,1,1],["No.4 top",3,0.5,1],["No.4 pants",3,0.5,1],["Towel",2,0.5,0],["Underwear",7,1,1]];
+const GR=['PT kit','Admin','No.4','Socks & underwear','Towels','Other'];
+function guessG(n){n=String(n).toLowerCase().trim();
+ if(/sock|underwear/.test(n))return'Socks & underwear';
+ if(['pt shorts','pt shirt','pt pants'].includes(n))return'PT kit';
+ if(['admin shirt','admin pants'].includes(n))return'Admin';
+ if(['no.4 top','no.4 pants','army uniform','army pants'].includes(n))return'No.4';
+ if(n==='towel'||n==='towels')return'Towels';return'Other'}
+function grouped(list){return GR.map(g=>[g,list.filter(x=>(x.group||'Other')===g)]).filter(x=>x[1].length)}
+const CK='laundry-v1-collapsed';let COL={};try{COL=JSON.parse(localStorage.getItem(CK))||{}}catch(e){}
+function tog(k){COL[k]=!COL[k];localStorage.setItem(CK,JSON.stringify(COL));buzz();const e=document.querySelector(`[data-ck="${CSS.escape(k)}"]`);e&&e.classList.toggle('cl',!!COL[k])}
+function ghead(k,g,sum){return `<div class="gh2${COL[k]?' cl':''}" data-ck="${esc(k)}" onclick="tog(this.dataset.ck)" role="button"><span class="cv">▼</span>${esc(g)}${sum}</div>`}
 let S=load();
-function mk(a){return{id:Math.random().toString(36).slice(2,8),name:a[0],qty:a[1],need:a[2],buf:a[3],clean:a[1],dirty:0,dry:0}}
-function load(){try{const s=JSON.parse(localStorage.getItem(K));if(s&&s.items){if(!s.uw){if(!s.items.some(i=>/underwear/i.test(i.name)))s.items.push(mk(["Underwear",7,1,1]));s.uw=1}return s}}catch(e){}return{items:DEF.map(mk),uw:1}}
+function mk(a){return{id:Math.random().toString(36).slice(2,8),name:a[0],qty:a[1],need:a[2],buf:a[3],clean:a[1],dirty:0,dry:0,group:guessG(a[0])}}
+function load(){try{const s=JSON.parse(localStorage.getItem(K));if(s&&s.items){if(!s.uw){if(!s.items.some(i=>/underwear/i.test(i.name)))s.items.push(mk(["Underwear",7,1,1]));s.uw=1}let ch=0;s.items.forEach(i=>{if(!i.group||!GR.includes(i.group)){i.group=guessG(i.name);ch=1}});if(ch)localStorage.setItem(K,JSON.stringify(s));return s}}catch(e){}return{items:DEF.map(mk),uw:1}}
 function save(){localStorage.setItem(K,JSON.stringify(S))}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1500)}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -97,7 +118,8 @@ function render(){
  sm.className='sum '+c;sm.innerHTML=`<span class="dot ${c}"></span><span>${esc(t)}</span>`;
  const ch=(v,k)=>`<span class="chip ${k}${v?'':' z'}">${v}</span>`;
  // fixed stored order: never sorted
- document.getElementById('items').innerHTML=S.items.map(i=>`<div class="row" data-id="${i.id}" onclick="openItem('${i.id}')"><span class="dot ${info(i).lvl}"></span><span class="nm">${esc(i.name)}</span><span class="chips">${ch(i.clean,'c')}${ch(i.dirty,'d')}${ch(i.dry,'w')}</span></div>`).join('')||'<div class="pr muted">No items. Add some in Settings.</div>';
+ const gsum=a=>{const d=a.reduce((s,i)=>s+i.dirty,0),w=a.reduce((s,i)=>s+i.dry,0);return `<span class="gs ${d?'d':w?'w':'ok'}">${d?d+' dirty':w?w+' drying':'all clean'}</span>`};
+ document.getElementById('items').innerHTML=grouped(S.items).map(([g,a])=>ghead('m:'+g,g,gsum(a))+'<div class="card">'+a.map(i=>`<div class="row" data-id="${i.id}" onclick="openItem('${i.id}')"><span class="dot ${info(i).lvl}"></span><span class="nm">${esc(i.name)}</span><span class="chips">${ch(i.clean,'c')}${ch(i.dirty,'d')}${ch(i.dry,'w')}</span></div>`).join('')+'</div>').join('')||'<div class="card"><div class="pr muted">No items. Add some in Settings.</div></div>';
 }
 /* sheet plumbing */
 const sh=document.getElementById('sheet'),bd=document.getElementById('bd');let onClose=null;
@@ -125,32 +147,32 @@ let W={};
 function openWash(){W={};S.items.forEach(i=>W[i.id]=i.dirty);openSheet('<div id="wb"></div>');drawW()}
 function drawW(){const d=S.items,dr=S.items.reduce((s,i)=>s+i.dry,0);
  document.getElementById('wb').innerHTML=`<h3>What did you wash?</h3><div class="sub muted">Takes dirty ones first, then clean</div>`+
- (d.length?d.map(i=>`<div class="st"><span class="lb" style="flex-direction:column;align-items:flex-start;gap:0">${esc(i.name)}<span class="muted">${i.dirty} dirty · ${i.clean} clean</span></span><button class="rb" ${W[i.id]<=0?'disabled':''} onclick="wa('${i.id}',-1)">−</button><span class="v">${W[i.id]}</span><button class="rb" ${W[i.id]>=i.dirty+i.clean?'disabled':''} onclick="wa('${i.id}',1)">+</button></div>`).join(''):'<p class="muted" style="text-align:center">Nothing dirty 🎉</p>')+
- `<button class="p full" style="margin-top:12px" ${d.length?'':'disabled'} onclick="doWash()">Put in wash</button>
- <div style="display:flex;gap:8px;margin-top:8px"><button style="flex:1" ${dr?'':'disabled'} onclick="allDry()">☀️ All dry (${dr})</button><button class="gh" style="flex:1" onclick="closeSheet()">Cancel</button></div>`}
-function wa(id,d){const i=get(id);W[id]=Math.max(0,Math.min(i.dirty+i.clean,W[id]+d));buzz();drawW()}
+ (d.length?grouped(d).map(([g,a])=>{const n=a.reduce((s,i)=>s+(W[i.id]||0),0);return ghead('w:'+g,g,`<span class="gs ${n?'w':'ok'}">${n?n+' to wash':'none'}</span>`)+'<div class="card">'+a.map(i=>`<div class="st"><span class="lb" style="flex-direction:column;align-items:flex-start;gap:0">${esc(i.name)}<span class="muted">${i.dirty} dirty · ${i.clean} clean</span></span><button class="rb" ${W[i.id]<=0?'disabled':''} onclick="wa('${i.id}',-1)">−</button><span class="v">${W[i.id]}</span><button class="rb" ${W[i.id]>=i.dirty+i.clean?'disabled':''} onclick="wa('${i.id}',1)">+</button></div>`).join('')+'</div>'}).join(''):'<p class="muted" style="text-align:center">Nothing dirty 🎉</p>')+
+ `<div class="wfoot"><button class="p full" ${d.length?'':'disabled'} onclick="doWash()">Put in wash</button>
+ <div style="display:flex;gap:8px;margin-top:8px"><button style="flex:1" ${dr?'':'disabled'} onclick="allDry()">☀️ All dry (${dr})</button><button class="gh" style="flex:1" onclick="closeSheet()">Cancel</button></div></div>`}
+function wa(id,d){const i=get(id);W[id]=Math.max(0,Math.min(i.dirty+i.clean,W[id]+d));buzz();const t=sh.scrollTop;drawW();sh.scrollTop=t}
 function doWash(){let n=0;S.items.forEach(i=>{const k=Math.min(W[i.id]||0,i.dirty+i.clean),fd=Math.min(k,i.dirty);i.dirty-=fd;i.clean-=k-fd;i.dry+=k;n+=k});save();render();closeSheet();toast(n+' items in the wash')}
 function allDry(){let n=0;S.items.forEach(i=>{n+=i.dry;i.clean+=i.dry;i.dry=0});save();render();closeSheet();toast(n?n+' items now clean':'Nothing drying')}
 /* settings sheet: edits a draft, Save applies */
 let D=[],confirmReset=false;
-function openSet(){D=S.items.map(i=>({id:i.id,name:i.name,qty:i.qty,need:i.need,buf:i.buf}));confirmReset=false;openSheet('<div id="sb"></div>');drawSet()}
-function grab(){document.querySelectorAll('#sb .srow[data-i]').forEach(r=>{const x=D[+r.dataset.i],v=[...r.querySelectorAll('input')].map(e=>e.value);x.name=v[0];x.qty=v[1];x.need=v[2];x.buf=v[3]})}
+function openSet(){D=S.items.map(i=>({id:i.id,name:i.name,qty:i.qty,need:i.need,buf:i.buf,group:i.group||'Other'}));confirmReset=false;openSheet('<div id="sb"></div>');drawSet()}
+function grab(){document.querySelectorAll('#sb .srow[data-i]').forEach(r=>{const x=D[+r.dataset.i],v=[...r.querySelectorAll('input')].map(e=>e.value);x.name=v[0];x.qty=v[1];x.need=v[2];x.buf=v[3];const sel=r.querySelector('select');if(sel)x.group=sel.value})}
 function drawSet(){document.getElementById('sb').innerHTML=`<h3>Settings</h3><div class="sub muted">Reorder with the arrows</div>
  <div class="srow hd"><span></span><span style="text-align:left">Name</span><span>Total</span><span>Per day</span><span>Buffer</span><span></span></div>
- ${D.map((x,k)=>`<div class="srow" data-i="${k}"><span class="arw"><button ${k?'':'disabled'} onclick="mv(${k},-1)" aria-label="up">▲</button><button ${k<D.length-1?'':'disabled'} onclick="mv(${k},1)" aria-label="down">▼</button></span><input class="n" value="${esc(x.name)}" placeholder="Item name"><input type="number" inputmode="numeric" min="0" value="${x.qty}"><input type="number" inputmode="decimal" min="0" step="0.5" value="${x.need}"><input type="number" inputmode="numeric" min="0" value="${x.buf}"><button class="x" onclick="del(${k})" aria-label="delete">✕</button></div>`).join('')}
+ ${grouped(D.map((x,k)=>Object.assign(x,{_k:k}))).map(([g,a])=>`<div class="sgh">${esc(g)}</div>`+a.map((x,j)=>{const k=x._k;return `<div class="srow" data-i="${k}"><span class="arw"><button ${j?'':'disabled'} onclick="mv(${k},-1)" aria-label="up">▲</button><button ${j<a.length-1?'':'disabled'} onclick="mv(${k},1)" aria-label="down">▼</button></span><input class="n" value="${esc(x.name)}" placeholder="Item name"><input type="number" inputmode="numeric" min="0" value="${x.qty}"><input type="number" inputmode="decimal" min="0" step="0.5" value="${x.need}"><input type="number" inputmode="numeric" min="0" value="${x.buf}"><button class="x" onclick="del(${k})" aria-label="delete">✕</button><span></span><select onchange="grab();drawSet()" aria-label="group">${GR.map(o=>`<option${o===x.group?' selected':''}>${esc(o)}</option>`).join('')}</select></div>`}).join('')).join('')}
  <button class="full" style="margin:10px 0 6px" onclick="addRow()">+ Add item</button>
  <p class="muted">Per day: 1 = one a day, 0.5 = one every 2 days. Buffer = clean spares you always want.</p>
  <button class="dg full" style="margin-bottom:10px" onclick="resetAll()">${confirmReset?'Tap again to mark everything clean':'Reset all clean'}</button>
  <div style="display:flex;gap:8px"><button class="gh" style="flex:1" onclick="closeSheet()">Cancel</button><button class="p" style="flex:2" onclick="saveSet()">Save</button></div>`}
-function mv(k,d){grab();const t=D[k];D[k]=D[k+d];D[k+d]=t;buzz();drawSet()}
+function mv(k,d){grab();let j=k+d;while(j>=0&&j<D.length&&D[j].group!==D[k].group)j+=d;if(j<0||j>=D.length)return;const t=D[k];D[k]=D[j];D[j]=t;buzz();drawSet()}
 function del(k){grab();D.splice(k,1);drawSet()}
-function addRow(){grab();D.push({id:'',name:'',qty:2,need:1,buf:0});drawSet();const ins=document.querySelectorAll('#sb input.n');ins[ins.length-1].focus()}
+function addRow(){grab();D.push({id:'',name:'',qty:2,need:1,buf:0,group:'Other'});drawSet();const ins=document.querySelectorAll('#sb input.n');ins[ins.length-1].focus()}
 function saveSet(){grab();const out=[];D.forEach(x=>{const name=String(x.name).trim();if(!name)return;
  const qty=Math.max(0,parseInt(x.qty)||0),need=Math.max(0,parseFloat(x.need)||0),buf=Math.max(0,parseInt(x.buf)||0);
- let i=x.id&&get(x.id);
+ let i=x.id&&get(x.id);const grp=GR.includes(x.group)?x.group:'Other';
  if(i){i.name=name;i.need=need;i.buf=buf;let diff=qty-i.qty;i.qty=qty;
   if(diff>0)i.clean+=diff;else{diff=-diff;for(const k of['clean','dirty','dry']){const t=Math.min(i[k],diff);i[k]-=t;diff-=t}}}
- else i=mk([name,qty,need,buf]);out.push(i)});
+ else i=mk([name,qty,need,buf]);i.group=grp;out.push(i)});
  S.items=out;save();render();closeSheet();toast('Saved')}
 function resetAll(){if(!confirmReset){grab();confirmReset=true;drawSet();return}
  S.items.forEach(i=>{i.clean=i.qty;i.dirty=0;i.dry=0});save();render();closeSheet();toast('All clean')}
