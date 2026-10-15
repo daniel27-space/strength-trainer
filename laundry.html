@@ -123,13 +123,13 @@ function act(a){const i=get(cur);
 /* washed sheet */
 let W={};
 function openWash(){W={};S.items.forEach(i=>W[i.id]=i.dirty);openSheet('<div id="wb"></div>');drawW()}
-function drawW(){const d=S.items.filter(i=>i.dirty),dr=S.items.reduce((s,i)=>s+i.dry,0);
- document.getElementById('wb').innerHTML=`<h3>What did you wash?</h3><div class="sub muted">Moves them from dirty to drying</div>`+
- (d.length?d.map(i=>`<div class="st"><span class="lb" style="flex-direction:column;align-items:flex-start;gap:0">${esc(i.name)}<span class="muted">${i.dirty} dirty</span></span><button class="rb" ${W[i.id]<=0?'disabled':''} onclick="wa('${i.id}',-1)">−</button><span class="v">${W[i.id]}</span><button class="rb" ${W[i.id]>=i.dirty?'disabled':''} onclick="wa('${i.id}',1)">+</button></div>`).join(''):'<p class="muted" style="text-align:center">Nothing dirty 🎉</p>')+
+function drawW(){const d=S.items,dr=S.items.reduce((s,i)=>s+i.dry,0);
+ document.getElementById('wb').innerHTML=`<h3>What did you wash?</h3><div class="sub muted">Takes dirty ones first, then clean</div>`+
+ (d.length?d.map(i=>`<div class="st"><span class="lb" style="flex-direction:column;align-items:flex-start;gap:0">${esc(i.name)}<span class="muted">${i.dirty} dirty · ${i.clean} clean</span></span><button class="rb" ${W[i.id]<=0?'disabled':''} onclick="wa('${i.id}',-1)">−</button><span class="v">${W[i.id]}</span><button class="rb" ${W[i.id]>=i.dirty+i.clean?'disabled':''} onclick="wa('${i.id}',1)">+</button></div>`).join(''):'<p class="muted" style="text-align:center">Nothing dirty 🎉</p>')+
  `<button class="p full" style="margin-top:12px" ${d.length?'':'disabled'} onclick="doWash()">Put in wash</button>
  <div style="display:flex;gap:8px;margin-top:8px"><button style="flex:1" ${dr?'':'disabled'} onclick="allDry()">☀️ All dry (${dr})</button><button class="gh" style="flex:1" onclick="closeSheet()">Cancel</button></div>`}
-function wa(id,d){const i=get(id);W[id]=Math.max(0,Math.min(i.dirty,W[id]+d));buzz();drawW()}
-function doWash(){let n=0;S.items.forEach(i=>{const k=Math.min(W[i.id]||0,i.dirty);i.dirty-=k;i.dry+=k;n+=k});save();render();closeSheet();toast(n+' items in the wash')}
+function wa(id,d){const i=get(id);W[id]=Math.max(0,Math.min(i.dirty+i.clean,W[id]+d));buzz();drawW()}
+function doWash(){let n=0;S.items.forEach(i=>{const k=Math.min(W[i.id]||0,i.dirty+i.clean),fd=Math.min(k,i.dirty);i.dirty-=fd;i.clean-=k-fd;i.dry+=k;n+=k});save();render();closeSheet();toast(n+' items in the wash')}
 function allDry(){let n=0;S.items.forEach(i=>{n+=i.dry;i.clean+=i.dry;i.dry=0});save();render();closeSheet();toast(n?n+' items now clean':'Nothing drying')}
 /* settings sheet: edits a draft, Save applies */
 let D=[],confirmReset=false;
