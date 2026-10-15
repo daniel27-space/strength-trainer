@@ -109,7 +109,7 @@ function toast(t){const e=document.getElementById('toast');e.textContent=t;e.cla
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function buzz(){try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}
 function info(i){const q=i.qty||0,c=i.clean;
- const lvl=q===0?'g':(c===0||(q>=3&&c<=1))?'r':c<=q/3?'a':'g';
+ const lvl=(q===0||!i.dirty)?'g':(c===0||(q>=3&&c<=1))?'r':c<=q/3?'a':'g';
  return{lvl,rank:{r:0,a:1,g:2}[lvl],ratio:q?c/q:1}}
 function hint(i,f){return f.lvl==='r'?(i.dirty?'wash now':i.dry?'dry them':'low'):'wash soon'}
 function get(id){return S.items.find(x=>x.id===id)}
