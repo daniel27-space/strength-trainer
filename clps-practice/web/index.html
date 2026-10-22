@@ -15,28 +15,38 @@ main{flex:1;display:flex;min-height:0}#map{flex:1;background:#000}
 .legend{background:#141a24cc;padding:6px;border-radius:6px;line-height:1.5}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
 body.cmp #panel{width:min(60vw,900px)}
 #polar{position:absolute;right:8px;bottom:22px;width:180px;height:180px;z-index:500;border:1px solid #556;border-radius:50%;background:#1b1f27;overflow:hidden;display:none}
-body.pole #polar{display:block}body.pole.big #polar{width:min(80%,80vh,420px);height:min(80%,80vh,420px);right:50%;bottom:50%;transform:translate(50%,50%)}
+body.pole #polar{display:block}body.pole.big #polar{left:0;top:0;right:0;bottom:0;width:auto;height:auto;border-radius:0;z-index:1100;background:#141922}
+#pclose{display:none;position:absolute;top:8px;right:8px;z-index:1200;width:44px;height:44px;font-size:20px}body.pole.big #pclose{display:block}@media(max-width:900px),(orientation:portrait) and (max-width:1100px){body.pole.big #polar{position:fixed}body.pole.big #pclose,body.pole.big #ptitle{position:fixed}}
+#ptitle{display:none;position:absolute;top:14px;left:12px;z-index:1200;font-size:15px;font-weight:600;pointer-events:none}body.pole.big #ptitle{display:block}
+.rl{color:#99a;font-size:12px;white-space:nowrap}body.pole:not(.big) .rl{font-size:10px}
+#panel{display:block}.intro h2{font-size:17px;margin:0 0 6px}.intro p{margin:4px 0;color:#bbc}.cnt{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.cnt span{padding:4px 8px;border-radius:12px;background:#1d2533;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl td,.tbl th{padding:8px 4px;border-bottom:1px solid #222b3a;text-align:left}.tbl tr.r{cursor:pointer}.tbl tr.r:hover{background:#1a2230}.back{display:inline-block;margin-bottom:8px;color:#7af;cursor:pointer;min-height:32px}
 .legend{font-size:13px}.legend.min .items{display:none}.legend summary{cursor:pointer;min-height:32px}
 .leaflet-control-layers label{min-height:36px;display:flex;align-items:center;font-size:14px}.leaflet-touch .leaflet-bar a{width:40px;height:40px;line-height:40px}
 canvas{max-width:100%}.chartbox{position:relative;height:clamp(180px,28vh,280px)}
 @media(max-width:900px),(orientation:portrait) and (max-width:1100px){main{flex-direction:column}#map{flex:1 1 50%;min-height:260px}#panel,body.cmp #panel{width:100%;flex:1 1 50%}}
-@media(max-width:600px){#cmp.on{flex-direction:column}header{gap:4px}header h1{width:100%;font-size:14px}header h1 small,#src{display:none}header select{flex:1 1 45%;min-width:0}header button{flex:1 1 45%}}
+@media(max-width:600px){#cmp.on{flex-direction:column}header{gap:4px}header h1{width:100%;font-size:14px}header h1 small,header select{flex:1 1 45%;min-width:0}header button{flex:1 1 45%}.tbl .pv{display:none}}
 body.cmp.pole:not(.big) #polar{display:none}@media(min-width:1024px){body.pole:not(.big) #polar{width:150px;height:150px}}
-@media(max-width:600px){body.pole.big #polar{width:min(90vw,60vh);height:min(90vw,60vh)}}
+
 </style></head><body>
 <header><h1>🌙 CLPS Browser <small style="color:#888">practice</small></h1>
 <select id="fs"><option value="">All status</option></select><select id="fp"><option value="">All providers</option></select>
-<button id="cbtn">Compare: off</button><button id="pbtn">South pole</button><span id="src" style="color:#888;font-size:12px"></span></header>
+<button id="cbtn">Compare: off</button><button id="pbtn">South pole</button></header>
 <div id="banner">MOCK DATA — fake sites for layout only (real data/*.json not found)</div>
-<main><div id="map" style="position:relative"><div id="polar"></div></div><div id="panel"><div id="one"></div><div id="cmp"><div id="c0"></div><div id="c1"></div></div></div></main>
+<main><div id="map" style="position:relative"><div id="polar"></div><button id="pclose" aria-label="Close south pole view">✕</button><div id="ptitle">South pole · polar view (lat ≤ −75°)</div></div><div id="panel"><div id="one"></div><div id="cmp"><div id="c0"></div><div id="c1"></div></div></div></main>
 <script>
 const COL={landed:'#2ecc71',partial:'#f1c40f',failed:'#e74c3c',planned:'#3498db'};
 let S=[],T={},markers=[],cmp=false,picked=[],charts={};
 async function j(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw 0;return r.json()}
-async function load(){try{S=await j('../data/sites.json');try{T=await j('../data/timeline.json')}catch(e){T={}}src.textContent='source: data/'}
-catch(e){S=await j('mock/sites.json');T=await j('mock/timeline.json');banner.style.display='block';src.textContent='source: web/mock/'}}
-const map=L.map('map',{worldCopyJump:false,minZoom:1,maxZoom:7,attributionControl:true}).setView([0,0],1);
-const opm=L.tileLayer('https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/{z}/{x}/{y}.png',{maxNativeZoom:7,attribution:'OpenPlanetary / LROC (NASA/GSFC/ASU)',noWrap:true});
+async function load(){try{S=await j('../data/sites.json');try{T=await j('../data/timeline.json')}catch(e){T={}}}
+catch(e){S=await j('mock/sites.json');T=await j('mock/timeline.json');banner.style.display='block'}}
+const MB=L.latLngBounds([[-85.05,-180],[85.05,180]]);const map=L.map('map',{zoomSnap:0,zoomDelta:0.5,maxZoom:7,maxBounds:MB,maxBoundsViscosity:1,attributionControl:true}).setView([0,0],1);
+function cover(){const z=map.getBoundsZoom(MB,true);const sz=map.getSize();const zc=Math.log2(Math.max(sz.x,sz.y)/256);map.setMinZoom(zc);if(map.getZoom()<zc+0.01||!cover.done){map.setView([0,0],zc,{animate:false});cover.done=1}}
+new ResizeObserver(()=>{map.invalidateSize();cover()}).observe(document.getElementById('map'));
+L.tileLayer('https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/{z}/{x}/{y}.png',{maxNativeZoom:2,noWrap:true,crossOrigin:true,attribution:''}).addTo(map);
+const opm=L.tileLayer('https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/{z}/{x}/{y}.png',{crossOrigin:true,maxNativeZoom:7,attribution:'OpenPlanetary / LROC (NASA/GSFC/ASU)',noWrap:true});
+const cv=document.createElement('canvas');cv.width=cv.height=32;const cx=cv.getContext('2d',{willReadFrequently:true});cx.imageSmoothingEnabled=false;
+opm.on('tileload',e=>{try{cx.drawImage(e.tile,0,0,32,32);const d=cx.getImageData(0,0,32,32).data;const h={};let top=0;for(let i=0;i<d.length;i+=4){const v=d[i];h[v]=(h[v]||0)+1;top=Math.max(top,h[v])}if(top>0.8*1024)e.tile.style.visibility='hidden'}catch(_){}});
 let tileErr=0;opm.on('tileerror',()=>{if(++tileErr==4){map.removeLayer(opm);L.imageOverlay('https://upload.wikimedia.org/wikipedia/commons/d/db/Moonmap_from_clementine_data.png',[[-85,-180],[85,180]]).addTo(map)}}).addTo(map);
 const lg=L.control({position:'bottomleft'});lg.onAdd=()=>{const d=L.DomUtil.create('div','legend');d.innerHTML='<details '+(innerWidth>=1400&&innerHeight>=850?'open':'')+'><summary>Legend</summary><span style="color:#f6f">dashed = approx</span><br>'+Object.entries({...COL,cancelled:'#777'}).map(([k,c])=>`<span class=dot style=background:${c}></span>${k}`).join('<br>')+'</details>';L.DomEvent.disableClickPropagation(d);return d};lg.addTo(map);
 function draw(){markers.forEach(m=>map.removeLayer(m));markers=[];const s=fs.value,p=fp.value;
@@ -54,17 +64,26 @@ function card(x,el,key){const t=T[x.id];const sm=t?.summary;
   {type:'line',label:'Earth elev°',data:t.samples.map(s=>s.earth_elev_deg),borderColor:'#5dade2',pointRadius:0,borderWidth:2,order:1},
   band('lit','rgba(245,176,65,.10)'),...(hasT?[{type:'line',label:'lit w/ terrain (prototype)',data:t.samples.map(s=>s.lit_terrain?0:null),borderColor:'#e67e22',borderWidth:5,pointRadius:0,spanGaps:false,order:0}]:[]),band('earth_visible','rgba(93,173,226,.10)')]},
   options:{maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:'#ccc',boxWidth:10,font:{size:10}}}},scales:{x:{ticks:{color:'#888',maxTicksLimit:6},title:{display:true,text:'UTC',color:'#888'}},y:{suggestedMin:Math.min(-5,...t.samples.map(s=>Math.min(s.sun_elev_deg,s.earth_elev_deg)))-2,suggestedMax:Math.max(5,...t.samples.map(s=>Math.max(s.sun_elev_deg,s.earth_elev_deg)))+2,ticks:{color:'#888'},title:{display:true,text:'elevation ° (smooth sphere)',color:'#888'}}}}})}
-function pick(x){panel.style.display='block';if(cmp){picked=[...picked.filter(p=>p!=x),x].slice(-2);one.innerHTML=picked.length<2?'<i>Tap a second site to compare</i>':'';picked.forEach((p,i)=>card(p,document.getElementById('c'+i),'c'+i))}else card(x,one,'one');setTimeout(()=>map.invalidateSize(),50)}
-pbtn.onclick=()=>{const b=document.body;if(!b.classList.contains('pole'))b.classList.add('pole','big');else if(b.classList.contains('big'))b.classList.remove('big');else b.classList.remove('pole');pbtn.textContent=b.classList.contains('pole')?(b.classList.contains('big')?'Pole: small':'Pole: hide'):'South pole';setTimeout(()=>{PM.invalidateSize();PM.setView([0,0],b.classList.contains('big')?3.4:2.6)},60)};
-cbtn.onclick=()=>{cmp=!cmp;document.body.classList.toggle('cmp',cmp);setTimeout(()=>map.invalidateSize(),60);cbtn.textContent='Compare: '+(cmp?'on':'off');document.getElementById('cmp').classList.toggle('on',cmp);one.innerHTML=cmp?'<i>Tap two sites to compare</i>':'';picked=[];c0.innerHTML=c1.innerHTML=''};
+function intro(){const c={};S.forEach(x=>{const k=x.cancelled?'cancelled':x.status;c[k]=(c[k]||0)+1});
+ const rows=[...S].sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(x=>`<tr class=r data-id="${x.id}"><td><span class=dot style="background:${x.cancelled?'#777':COL[x.status]}"></span>${x.mission}</td><td class=pv>${x.provider}</td><td>${x.date}</td><td>${x.cancelled?'Cancelled':x.status}</td></tr>`).join('');
+ one.innerHTML=`<div class=intro><h2>CLPS Lunar Mission Browser</h2><p>NASA's Commercial Lunar Payload Services missions: where they landed (or will), and when each site has sunlight and a line of sight to Earth.</p>
+ <p><b>How to use:</b> tap a marker or a row below for mission details and a 60-day sun/Earth timeline. <b>Compare</b> shows two sites side by side. <b>South pole</b> opens a polar view for sites near the pole. ✦ = Artemis III candidate regions.</p>
+ <div class=cnt><span>${S.length} missions</span>${Object.entries(c).map(([k,v])=>`<span><span class=dot style="background:${k=='cancelled'?'#777':COL[k]}"></span>${v} ${k}</span>`).join('')}</div>
+ <table class=tbl><tr><th>Mission</th><th class=pv>Provider</th><th>Date</th><th>Status</th></tr>${rows}</table><p class=k style="font-size:12px">Practice build. Times UTC. Sun/Earth geometry on a smooth sphere unless marked terrain.</p></div>`;
+ one.querySelectorAll('tr.r').forEach(t=>t.onclick=()=>pick(S.find(x=>x.id==t.dataset.id)))}
+function pick(x){panel.style.display='block';if(cmp){picked=[...picked.filter(p=>p!=x),x].slice(-2);one.innerHTML=picked.length<2?'<i>Tap a second site to compare</i>':'';picked.forEach((p,i)=>card(p,document.getElementById('c'+i),'c'+i))}else{card(x,one,'one');one.insertAdjacentHTML('afterbegin','<a class=back onclick="intro()">← All missions</a>')}panel.scrollTop=0;setTimeout(()=>map.invalidateSize(),50)}
+function poleView(){const b=document.body;pbtn.textContent=b.classList.contains('big')?'Close pole':'South pole';const fit=()=>{PM.invalidateSize();if(b.classList.contains('big')){const s=PM.getSize();PM.fitBounds([[-11.5,-11.5],[11.5,11.5]],{padding:[40,40]})}else PM.fitBounds([[-16,-16],[16,16]])};setTimeout(fit,60)}
+pclose.onclick=()=>{document.body.classList.remove('big');if(innerWidth<1024)document.body.classList.remove('pole');poleView()};
+pbtn.onclick=()=>{const b=document.body;if(b.classList.contains('big')){pclose.onclick();return}b.classList.add('pole','big');poleView();};
+cbtn.onclick=()=>{cmp=!cmp;document.body.classList.toggle('cmp',cmp);setTimeout(()=>map.invalidateSize(),60);cbtn.textContent='Compare: '+(cmp?'on':'off');document.getElementById('cmp').classList.toggle('on',cmp);if(cmp)one.innerHTML='<i>Tap two sites (map or polar view) to compare</i>';else intro();picked=[];c0.innerHTML=c1.innerHTML=''};
 fs.onchange=fp.onchange=draw;
 let AR=L.layerGroup();fetch('../data/artemis_regions.json').then(r=>r.ok?r.json():[]).then(a=>{a.forEach(r=>L.marker([r.lat,r.lon],{icon:L.divIcon({className:'',html:'<div style="color:#fff;font-size:16px;text-shadow:0 0 3px #000">✦</div>'})}).bindPopup(`<b>Artemis III candidate:</b> ${r.name}${r.uncertain?' (approx.)':''}<br>${r.lat.toFixed(2)}°, ${r.lon.toFixed(2)}°${r.source?`<br><a href="${r.source}" target=_blank>source</a>`:''}`).addTo(AR));if(a.length){AR.addTo(map);}if(a.length)L.control.layers(null,{'Artemis III ✦':AR},{collapsed:false}).addTo(map)}).catch(()=>{});
-const PM=L.map('polar',{crs:L.CRS.Simple,zoomControl:false,attributionControl:false,minZoom:-2}).setView([0,0],2.6);
+document.getElementById('polar').addEventListener('click',e=>{if(!document.body.classList.contains('big')&&!e.target.closest('path')){document.body.classList.add('big');poleView()}});const PM=L.map('polar',{crs:L.CRS.Simple,zoomControl:false,attributionControl:false,minZoom:-2,zoomSnap:0}).setView([0,0],2.6);
 function ps(lat,lon){const r=(90+lat);const a=lon*Math.PI/180;return [r*Math.cos(a),r*Math.sin(a)]}
-[5,10,15].forEach(r=>L.circle([0,0],{radius:r,color:'#445',weight:1,fill:false,interactive:false}).addTo(PM));
-L.marker([0,0],{icon:L.divIcon({className:'',html:'<div style="color:#aaa;font-size:9px;white-space:nowrap">S pole (stereo, rings 5°)</div>'})}).addTo(PM);
-function drawPolar(list,ar){list.filter(x=>x.lat!=null&&x.lat<=-75).forEach(x=>L.circleMarker(ps(x.lat,x.lon),{radius:6,color:x.uncertain?'#ff66ff':'#fff',dashArray:x.uncertain?'3 3':null,weight:1.5,fillColor:x.cancelled?'#777':COL[x.status],fillOpacity:.9}).addTo(PM).bindTooltip(x.mission+' '+x.lat.toFixed(2)+'°').on('click',()=>pick(x)));
- (ar||[]).forEach(r=>L.marker(ps(r.lat,r.lon),{icon:L.divIcon({className:'',html:'<div style="color:#fff;font-size:11px">✦</div>'})}).addTo(PM).bindTooltip('Artemis III: '+r.name))}
+[5,10,15].forEach(r=>{L.circle([0,0],{radius:r,color:'#556',weight:1,fill:false,interactive:false}).addTo(PM);L.marker([-r,0],{interactive:false,icon:L.divIcon({className:'',html:`<div class=rl style='transform:translate(-50%,2px)'>${-90+r}°</div>`})}).addTo(PM)});
+L.marker([0,0],{interactive:false,icon:L.divIcon({className:'',html:'<div class=rl style="transform:translate(-50%,-50%)">+ pole</div>'})}).addTo(PM);
+function drawPolar(list,ar){list.filter(x=>x.lat!=null&&x.lat<=-75).forEach(x=>L.circleMarker(ps(x.lat,x.lon),{radius:6,color:x.uncertain?'#ff66ff':'#fff',dashArray:x.uncertain?'3 3':null,weight:1.5,fillColor:x.cancelled?'#777':COL[x.status],fillOpacity:.9}).addTo(PM).bindTooltip(x.mission+' '+x.lat.toFixed(2)+'°',{direction:'top'}).on('click',()=>pick(x)));
+ (ar||[]).forEach(r=>L.marker(ps(r.lat,r.lon),{icon:L.divIcon({className:'',html:'<div style="color:#fff;font-size:11px">✦</div>'})}).addTo(PM).bindTooltip('Artemis III: '+r.name,{direction:'top'}))}
 fetch('../data/artemis_regions.json').then(r=>r.ok?r.json():[]).catch(()=>[]).then(a=>window.ARD=a);
-load().then(()=>{map.fitBounds([[-85,-180],[85,180]]);setTimeout(()=>drawPolar(S,window.ARD),300);if(innerWidth>=1024&&innerHeight>=700){document.body.classList.add('pole');pbtn.textContent='Pole: hide'}[...Object.keys(COL),'cancelled'].forEach(s=>fs.add(new Option(s,s)));[...new Set(S.map(x=>x.provider))].sort().forEach(p=>fp.add(new Option(p,p)));draw();window.READY=1;window.SITES=S});
+load().then(()=>{cover();intro();setTimeout(()=>drawPolar(S,window.ARD),300);if(innerWidth>=1024&&innerHeight>=700){document.body.classList.add('pole');poleView()}[...Object.keys(COL),'cancelled'].forEach(s=>fs.add(new Option(s,s)));[...new Set(S.map(x=>x.provider))].sort().forEach(p=>fp.add(new Option(p,p)));draw();window.READY=1;window.SITES=S});
 </script></body></html>
