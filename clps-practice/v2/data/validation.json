@@ -1,0 +1,78 @@
+{
+ "note": "Long-term (20-yr) averages from Gl\u00e4ser et al. 2018 Table 1 (surface level) & Table 2 (2 m above ground), which also re-list Mazarico 2011 and Speyerer&Robinson 2013. 1-2 month calc runs will differ; flat-horizon (no DEM) calc will OVERESTIMATE illumination. Longitudes converted to -180..180.",
+ "source_url": "https://ntrs.nasa.gov/api/citations/20170007365/downloads/20170007365.pdf",
+ "sites": [
+  {
+   "id": "connecting-ridge-c1",
+   "name": "Connecting Ridge C1",
+   "lat": -89.45,
+   "lon": -137.31,
+   "pct_lit_expected": 89.0,
+   "solar_visibility_pct": 92.7,
+   "longest_shadow_h": 141.12,
+   "source": "Mazarico et al. 2011 Icarus 211:1066 (via Gl\u00e4ser 2018 Table 1)",
+   "uncertain": false
+  },
+  {
+   "id": "connecting-ridge-c1-glaser",
+   "name": "Connecting Ridge C1 (Gl\u00e4ser, 20 m DTM, surface)",
+   "lat": -89.4505,
+   "lon": -137.16,
+   "pct_lit_expected": 76.0,
+   "solar_visibility_pct": 81.3,
+   "longest_shadow_h": 268,
+   "source": "Gl\u00e4ser et al. 2018 PSS Table 1",
+   "uncertain": false
+  },
+  {
+   "id": "connecting-ridge-c1-2m",
+   "name": "Connecting Ridge C1, 2 m above ground",
+   "lat": -89.4398,
+   "lon": -137.17,
+   "pct_lit_expected": 88.0,
+   "solar_visibility_pct": 92.1,
+   "longest_shadow_h": 112,
+   "source": "Gl\u00e4ser et al. 2018 Table 2",
+   "uncertain": false
+  },
+  {
+   "id": "shackleton-s",
+   "name": "Shackleton rim S",
+   "lat": -89.78,
+   "lon": -155.73,
+   "pct_lit_expected": 86.7,
+   "solar_visibility_pct": 90.5,
+   "source": "Mazarico et al. 2011 (via Gl\u00e4ser 2018 Table 1); Gl\u00e4ser: 81.0/85.5%, 221 h shadow",
+   "uncertain": false
+  },
+  {
+   "id": "im-1-site",
+   "name": "IM-1 site",
+   "lat": -80.1276,
+   "lon": 1.4367,
+   "pct_earth_expected": [
+    95,
+    100
+   ],
+   "note": "Own estimate, not literature: near side, Earth elev ~10\u00b0\u00b17\u00b0 on flat horizon.",
+   "uncertain": true
+  },
+  {
+   "id": "generic-pole",
+   "name": "89.5S flat horizon",
+   "pct_earth_expected": [
+    45,
+    55
+   ],
+   "sun_elev_max_deg": 2.04,
+   "note": "Geometry: max sun elev = 90-|lat|+1.54.",
+   "uncertain": false
+  }
+ ],
+ "checks": [
+  "max sun elevation <= 90-|lat|+1.54",
+  "synodic period ~29.53 d",
+  "Earth elevation varies over ~27.3 d (libration)",
+  "DEM horizon lowers % lit vs flat horizon"
+ ]
+}

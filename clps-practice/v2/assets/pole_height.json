@@ -1,0 +1,14 @@
+{
+ "albedo_source": "LOLA normal albedo LDAM_50S_1000M_FLOAT (imbrium.mit.edu/DATA/LOLA_GDR/POLAR/FLOAT_IMG) 1 km/px, + small DEM-derived AO/grain detail",
+ "source": "LOLA LDEM_75S_240M (PGDA/PDS), polar stereographic south, lon0=0",
+ "width": 1024,
+ "height": 1024,
+ "half_size_km": 184.32,
+ "m_per_px": 360.0,
+ "h_min_m": -5486.1669921875,
+ "h_max_m": 7013.74072265625,
+ "encoding": "RGB PNG, v=R*256+G (16-bit split), h=h_min+v/65535*(h_max-h_min), heights rel. 1737.4 km sphere",
+ "lat_edge_deg": -83.92720751560844,
+ "projection": "x=2R tan(pi/4+lat/2) sin(lon), y=2R tan(pi/4+lat/2) cos(lon); image col=x, row=-y (row grows away from lon 0)",
+ "scene_frame": "pole scene units km: X=x_ps, Z=-y_ps, Y=up; ME->scene: (X,Y,Z)=(y_ME,-z_ME,-x_ME)"
+}
