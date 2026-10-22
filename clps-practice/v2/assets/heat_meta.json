@@ -1,0 +1,8 @@
+{
+ "extent": "square image covers polar stereographic x,y in [-185760,185760] m (lat<=-84 disc, corners transparent)",
+ "orientation": "same as LOLA polar DEM: top = lon 0 (Earth-facing), right = lon +90E, centre = pole",
+ "half_width_m": 185760.0,
+ "window": "2026-11-14 +180 d",
+ "colour": "dark (0%) -> amber/blue (100%)",
+ "source": "v2/data/plan_grid.json level 0"
+}

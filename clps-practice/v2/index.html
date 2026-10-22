@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CLPS · Lunar South Pole Browser (practice)</title>
+<meta name="theme-color" content="#07080b">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<div id="scene" aria-label="3D Moon view"></div>
+<header id="top" class="glass">
+  <div class="brand"><span class="logo">◐</span><div><b>CLPS South Pole</b><small>practice build</small></div></div>
+  <div class="seg" role="tablist" aria-label="View">
+    <button data-view="globe" aria-pressed="true">Globe</button><button data-view="pole">South Pole</button>
+  </div>
+  <div class="actions">
+    <button id="tourBtn" class="accent" title="Start 60-second guided tour">▶ <span class="lbl">Start tour</span></button>
+    <button id="shareBtn" title="Copy link to this view" aria-label="Copy link">⤴<span class="lbl"> Share</span></button>
+  </div>
+</header>
+<aside id="panel" class="glass" data-snap="peek">
+  <div id="grab" aria-label="Drag to resize"><span></span></div>
+  <nav class="tabs" role="tablist">
+    <button data-tab="missions">Missions</button><button data-tab="site">Site</button><button data-tab="compare">Compare</button><button data-tab="plan">Plan</button>
+  </nav>
+  <div id="pbody">
+    <section data-pane="missions"></section>
+    <section data-pane="site"></section>
+    <section data-pane="compare"></section>
+    <section data-pane="plan"></section>
+  </div>
+  <footer class="dataupd"></footer>
+</aside>
+<div id="scrub" class="glass">
+  <div class="srow">
+    <button id="play" aria-label="Play">▶</button>
+    <button id="speed" class="mono" aria-label="Playback speed">1d/s</button>
+    <div class="track"><svg id="bands" preserveAspectRatio="none"></svg><input id="time" type="range" min="0" max="1000" step="1" aria-label="Time"></div>
+  </div>
+  <div class="slabel"><span id="tlabel" class="mono"></span><span id="tnow" class="mono"></span><label class="layersel"><span class="lbl2">Layer</span><select id="layer" aria-label="Heatmap layer"><option value="none">No heatmap</option><option value="lit">% time lit</option><option value="earth">% Earth visible</option></select></label><span id="heatlg" class="heatlg" hidden><span class="mono">0%</span><i></i><span class="mono">100%</span><small>180 d from 14 Nov</small></span><span class="legend"><i class="l-sun"></i>Sun <i class="l-earth"></i>Earth <i class="l-both"></i>Lit + Earth</span></div>
+</div>
+<div id="caption" class="glass" hidden><div id="captext"></div><div class="capbar"><i></i></div><button id="tourStop">Stop tour</button></div>
+<div id="toast" hidden></div>
+<script type="module" src="app.js"></script>
+</body></html>

@@ -1,0 +1,110 @@
+[
+ {
+  "id": "haworth",
+  "name": "Haworth",
+  "lat": -86.99,
+  "lon": -24.254,
+  "source": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025JE009434",
+  "uncertain": false,
+  "note": "Representative site from Wueller et al. 2026 JGR Table A1 (K2023/MMO03)",
+  "source_url": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025JE009434",
+  "uncertainty": "representative point of a ~15x15 km region",
+  "updated": "2026-10-22"
+ },
+ {
+  "id": "malapert-massif",
+  "name": "Malapert Massif",
+  "lat": -85.992,
+  "lon": 2.056,
+  "source": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025JE009434",
+  "uncertain": false,
+  "note": "Representative site from Wueller et al. 2026 JGR Table A1 (K2023/MMO03)",
+  "source_url": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025JE009434",
+  "uncertainty": "representative point of a ~15x15 km region",
+  "updated": "2026-10-22"
+ },
+ {
+  "id": "de-gerlache-rim-2",
+  "name": "de Gerlache Rim 2",
+  "lat": -88.45,
+  "lon": -67.859,
+  "source": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025JE009434",
+  "uncertain": false,
+  "note": "Representative site from Wueller et al. 2026 JGR Table A1 (K2023/MMO03)",
+  "source_url": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025JE009434",
+  "uncertainty": "representative point of a ~15x15 km region",
+  "updated": "2026-10-22"
+ },
+ {
+  "id": "mons-mouton",
+  "name": "Mons Mouton",
+  "lat": -85.41,
+  "lon": 30.41,
+  "source": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025JE009434",
+  "uncertain": false,
+  "note": "Representative site from Wueller et al. 2026 JGR Table A1 (K2023/MMO03)",
+  "source_url": "https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025JE009434",
+  "uncertainty": "representative point of a ~15x15 km region",
+  "updated": "2026-10-22"
+ },
+ {
+  "id": "mons-mouton-plateau",
+  "name": "Mons Mouton Plateau",
+  "lat": -84.78,
+  "lon": 29.13,
+  "source": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertain": true,
+  "note": "Approximate centre; region name from NASA Oct 2024 list, coords not officially published",
+  "source_url": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertainty": "representative point of a ~15x15 km region; uncertain",
+  "updated": "2026-10-22"
+ },
+ {
+  "id": "nobile-rim-1",
+  "name": "Nobile Rim 1",
+  "lat": -85.2,
+  "lon": 37.0,
+  "source": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertain": true,
+  "note": "Approximate centre; region name from NASA Oct 2024 list, coords not officially published",
+  "source_url": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertainty": "representative point of a ~15x15 km region; uncertain",
+  "updated": "2026-10-22"
+ },
+ {
+  "id": "nobile-rim-2",
+  "name": "Nobile Rim 2",
+  "lat": -84.0,
+  "lon": 58.0,
+  "source": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertain": true,
+  "note": "Approximate centre; region name from NASA Oct 2024 list, coords not officially published",
+  "source_url": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertainty": "representative point of a ~15x15 km region; uncertain",
+  "updated": "2026-10-22"
+ },
+ {
+  "id": "peak-near-cabeus-b",
+  "name": "Peak near Cabeus B",
+  "lat": -83.6,
+  "lon": -69.0,
+  "source": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertain": true,
+  "note": "Approximate centre; region name from NASA Oct 2024 list, coords not officially published",
+  "source_url": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertainty": "representative point of a ~15x15 km region; uncertain",
+  "updated": "2026-10-22"
+ },
+ {
+  "id": "slater-plain",
+  "name": "Slater Plain",
+  "lat": -87.2,
+  "lon": 126.0,
+  "source": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertain": true,
+  "note": "Approximate centre; region name from NASA Oct 2024 list, coords not officially published",
+  "source_url": "https://www.nasa.gov/news-release/nasa-provides-update-on-artemis-iii-moon-landing-regions/",
+  "uncertainty": "representative point of a ~15x15 km region; uncertain",
+  "updated": "2026-10-22"
+ }
+]
