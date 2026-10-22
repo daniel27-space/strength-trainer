@@ -1,0 +1,79 @@
+{
+ "results": [
+  {
+   "check": "connecting-ridge-c1 max sun elev <= 2.09",
+   "pass": true,
+   "detail": "max=2.00"
+  },
+  {
+   "check": "connecting-ridge-c1 pct_lit ~89.0 (lit. 20-yr, terrain)",
+   "pass": true,
+   "detail": "flat=52.3 terrain_masked=84.7 (2-yr window 2026-27, 240 m DEM, sun point-source; loose +-15 tolerance)"
+  },
+  {
+   "check": "connecting-ridge-c1-glaser max sun elev <= 2.09",
+   "pass": true,
+   "detail": "max=2.00"
+  },
+  {
+   "check": "connecting-ridge-c1-glaser pct_lit ~76.0 (lit. 20-yr, terrain)",
+   "pass": true,
+   "detail": "flat=52.3 terrain_masked=71.3 (2-yr window 2026-27, 240 m DEM, sun point-source; loose +-15 tolerance)"
+  },
+  {
+   "check": "connecting-ridge-c1-2m max sun elev <= 2.10",
+   "pass": true,
+   "detail": "max=2.01"
+  },
+  {
+   "check": "connecting-ridge-c1-2m pct_lit ~88.0 (lit. 20-yr, terrain)",
+   "pass": false,
+   "detail": "flat=52.4 terrain_masked=62.2 (2-yr window 2026-27, 240 m DEM, sun point-source; loose +-15 tolerance)"
+  },
+  {
+   "check": "shackleton-s max sun elev <= 1.76",
+   "pass": true,
+   "detail": "max=1.67"
+  },
+  {
+   "check": "shackleton-s pct_lit ~86.7 (lit. 20-yr, terrain)",
+   "pass": true,
+   "detail": "flat=51.7 terrain_masked=86.8 (2-yr window 2026-27, 240 m DEM, sun point-source; loose +-15 tolerance)"
+  },
+  {
+   "check": "im-1-site max sun elev <= 11.41",
+   "pass": true,
+   "detail": "max=11.39"
+  },
+  {
+   "check": "im-1-site pct_earth in [95,100]",
+   "pass": true,
+   "detail": "100.0"
+  },
+  {
+   "check": "generic-pole max sun elev <= 2.04",
+   "pass": true,
+   "detail": "max=2.02"
+  },
+  {
+   "check": "generic-pole sun_elev_max",
+   "pass": true,
+   "detail": "max=2.02"
+  },
+  {
+   "check": "generic-pole pct_earth in [45,55]",
+   "pass": true,
+   "detail": "47.3"
+  },
+  {
+   "check": "synodic period ~29.53 d",
+   "pass": true,
+   "detail": "29.5 d (6h step)"
+  },
+  {
+   "check": "Earth elev slow (max 6h change < 1.5 deg)",
+   "pass": true,
+   "detail": "max step=0.38"
+  }
+ ]
+}

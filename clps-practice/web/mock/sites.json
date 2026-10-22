@@ -1,0 +1,46 @@
+[
+ {
+  "id": "mock-alpha",
+  "mission": "MOCK Alpha-1",
+  "provider": "Mock Lunar Co",
+  "lander": "MockLander A",
+  "lat": -84.5,
+  "lon": 30.0,
+  "date": "2026-03-01",
+  "status": "landed",
+  "payloads": [
+   "MOCK spectrometer",
+   "MOCK camera"
+  ],
+  "source": "mock"
+ },
+ {
+  "id": "mock-bravo",
+  "mission": "MOCK Bravo-2",
+  "provider": "Fake Space Inc",
+  "lander": "FakeLander B",
+  "lat": 18.0,
+  "lon": -35.0,
+  "date": "2026-07-15",
+  "status": "partial",
+  "payloads": [
+   "MOCK drill"
+  ],
+  "source": "mock"
+ },
+ {
+  "id": "mock-charlie",
+  "mission": "MOCK Charlie-3",
+  "provider": "Mock Lunar Co",
+  "lander": "MockLander C",
+  "lat": -30.0,
+  "lon": 60.0,
+  "date": "2027-01-10",
+  "status": "planned",
+  "payloads": [
+   "MOCK rover",
+   "MOCK radio"
+  ],
+  "source": "mock"
+ }
+]
