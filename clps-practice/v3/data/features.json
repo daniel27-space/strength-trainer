@@ -1,0 +1,69 @@
+{
+ "what": "crater name labels for the 3D map",
+ "source": "IAU Gazetteer of Planetary Nomenclature (approximate centres, rounded)",
+ "source_url": "https://planetarynames.wr.usgs.gov/",
+ "uncertainty": "label positions approximate (~1-2 km); checked against LOLA DEM depressions",
+ "updated": "2026-10-24",
+ "features": [
+  {
+   "name": "Shackleton",
+   "lat": -89.67,
+   "lon": 129.78,
+   "kind": "crater"
+  },
+  {
+   "name": "Shoemaker",
+   "lat": -88.14,
+   "lon": 44.91,
+   "kind": "crater"
+  },
+  {
+   "name": "Faustini",
+   "lat": -87.18,
+   "lon": 84.31,
+   "kind": "crater"
+  },
+  {
+   "name": "Haworth",
+   "lat": -87.45,
+   "lon": -5.16,
+   "kind": "crater"
+  },
+  {
+   "name": "de Gerlache",
+   "lat": -88.5,
+   "lon": -87.08,
+   "kind": "crater"
+  },
+  {
+   "name": "Sverdrup",
+   "lat": -88.3,
+   "lon": -152.0,
+   "kind": "crater"
+  },
+  {
+   "name": "Cabeus",
+   "lat": -85.33,
+   "lon": -42.13,
+   "kind": "crater"
+  },
+  {
+   "name": "Nobile",
+   "lat": -85.28,
+   "lon": 53.5,
+   "kind": "crater"
+  },
+  {
+   "name": "Amundsen",
+   "lat": -84.4,
+   "lon": 83.07,
+   "kind": "crater"
+  },
+  {
+   "name": "Malapert",
+   "lat": -84.9,
+   "lon": 12.9,
+   "kind": "crater"
+  }
+ ]
+}

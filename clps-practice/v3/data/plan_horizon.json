@@ -1,0 +1,18 @@
+{
+ "naz": 64,
+ "az0": "local north (toward lat +90 along the meridian), clockwise",
+ "decode": "code<=200: deg = code*0.05 - 5 ; code>200: deg = 5 + (code-200)*0.15  (range -5..+13.25 deg)",
+ "image": "plan_horizon.png: 8-bit greyscale, width = naz (64 azimuths), one row per grid cell in plan_grid.json order (level 0 then level 1)",
+ "rows": 19614,
+ "checksum_sum_mod_2_32": 217768197,
+ "checksum_row0": [
+  131,
+  145,
+  153,
+  153,
+  134,
+  125,
+  127,
+  132
+ ]
+}
