@@ -1,0 +1,9 @@
+{
+ "extent": "square image covers polar stereographic x,y in [-185760,185760] m (lat<=-84 disc; transparent = no data)",
+ "orientation": "top = lon 0 (Earth-facing), right = lon +90E, centre = pole",
+ "half_width_m": 185760.0,
+ "window": "365 d from 2026-11-14 (full year)",
+ "smoothing": "bilinear between cell centres (2.88 km; 0.96 km inside ~88.5S); real resolution is the cell size, not the pixel",
+ "colour": "dark (0%) -> amber (Sun) / blue (Earth) (100%)",
+ "source": "v3 data/plan_grid.json"
+}
