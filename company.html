@@ -15,9 +15,14 @@
 h1{font-size:18px;margin:12px 0 4px;color:#9fb8a3}
 .total{background:#3a5a40;border-radius:16px;padding:16px;text-align:center;margin:8px 0 12px}
 .total b{font-size:44px;display:block}.total small{opacity:.8}
-button.sec{display:block;width:100%;text-align:left;background:#1a221d;color:inherit;border-radius:14px;padding:12px;margin-bottom:10px;font-weight:400}
-.sh{display:flex;justify-content:space-between;align-items:center;font-size:18px}.sh b{font-size:26px}
-.break{font-size:15px;margin-top:6px;color:#d5e0d8}
+.sec{background:#1a221d;border-radius:14px;padding:12px;margin-bottom:10px}
+button.pname{display:block;width:100%;text-align:left;background:transparent;color:#9fb8a3;font-size:16px;font-weight:600;min-height:0;padding:0 0 8px;border-radius:0}
+.sec .step input{font-size:34px;min-height:60px;background:#24312a;border:1px dashed #5b8a62}
+.sec .of{font-size:28px;white-space:nowrap;flex:0 0 auto;min-width:max-content}
+button.chiprow{display:flex;flex-wrap:wrap;gap:6px;width:100%;align-items:center;text-align:left;background:transparent;color:inherit;font-weight:400;min-height:0;padding:10px 0 0;margin-top:10px;border-top:1px solid #2a352d;border-radius:0}
+button.chiprow span{background:#24312a;border-radius:999px;padding:5px 10px;font-size:13px;line-height:1.3}
+button.chiprow span.u{background:#5a4a1f;color:#f0c674}
+button.chiprow span.hint{background:transparent;color:#8a9a8d;padding:0;font-size:13px}
 .muted{color:#8a9a8d;font-size:13px}.warn{color:#f0c674;font-weight:600}
 button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#2b3a2f;color:#e8efe9}
 button.p{background:#5b8a62;color:#fff;font-weight:600}button.d{background:#6b2b2b}
@@ -68,7 +73,7 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 <dialog id="setD"><form method="dialog" onsubmit="return false">
 <h1 style="margin-top:0">Settings</h1>
 <label>Platoons (number → total strength)</label>
-<div class="muted">Platoon number, then full strength. Absences are logged on the main screen.</div>
+<div class="muted">Platoon number, then full strength. Present is edited on the main screen.</div>
 <div id="slist"></div>
 <button type="button" onclick="addPlt()" style="margin-top:8px">+ Add platoon</button>
 <div class="row" style="margin-top:14px"><button type="button" onclick="setD.close()">Cancel</button><button type="button" class="p" onclick="saveSetup()">Save</button></div>
@@ -78,24 +83,28 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 const KEY='strengthTracker.company.local.v1',DEFAULT_TOTAL=62,REASONS=['MC','Ammo','Physio','Break','Other'];
 const TRASH='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
 let S=load(),tmp=[],absI=0,absReason='MC',pending=[];
-function fresh(){return{platoons:[1,2,3,4].map(n=>({n,total:DEFAULT_TOTAL,absences:[]}))}}
+function fresh(){return{platoons:[1,2,3,4].map(n=>({n,total:DEFAULT_TOTAL,present:DEFAULT_TOTAL,absences:[]}))}}
 function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function canonReason(r){const t=String(r||'').trim();if(!t)return'';const hit=REASONS.find(x=>x.toLowerCase()===t.toLowerCase());return hit||t}
 function cleanAbsence(raw){const reason=canonReason(raw&&raw.reason);if(!reason)return null;const ids=[];(raw.ids||[]).forEach(id=>{const s=String(id).replace(/\D/g,'');if(s.length===4&&!ids.includes(s))ids.push(s)});let count=parseInt(raw&&raw.count,10);if(!Number.isFinite(count)||count<ids.length)count=Math.max(ids.length,0);if(count<1&&!ids.length)return null;return{reason,count,ids}}
 function capAbsences(list,total){const out=[];let left=total;list.forEach(a=>{if(left<=0)return;const count=Math.min(a.count,left);const ids=a.ids.slice(0,count);out.push({reason:a.reason,count,ids});left-=count});return out}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.platoons)){const n=normalize(s);if(n)return n}}catch(e){}return fresh()}
-function normalize(s){const out=[],seen=new Set();s.platoons.forEach(raw=>{const n=parseInt(raw&&raw.n,10),total=parseInt(raw&&raw.total,10);if(!(n>=1&&n<=9)||!(total>0)||seen.has(n))return;seen.add(n);let absences=Array.isArray(raw.absences)?raw.absences.map(cleanAbsence).filter(Boolean):null;if(!absences){const present=parseInt(raw&&raw.present,10);const gap=Number.isFinite(present)?Math.max(0,total-present):0;absences=gap?[{reason:'Unaccounted',count:gap,ids:[]}]:[]}absences=capAbsences(absences,total);out.push({n,total,absences})});out.sort((a,b)=>a.n-b.n);return out.length?{platoons:out}:null}
-function save(){try{localStorage.setItem(KEY,JSON.stringify({platoons:S.platoons.map(p=>({n:p.n,total:p.total,present:presentOf(p),absences:p.absences}))}))}catch(e){toast('Could not save on this phone')}}
+function normalize(s){const out=[],seen=new Set();s.platoons.forEach(raw=>{const n=parseInt(raw&&raw.n,10),total=parseInt(raw&&raw.total,10);if(!(n>=1&&n<=9)||!(total>0)||seen.has(n))return;seen.add(n);const cleaned=Array.isArray(raw.absences)?raw.absences.map(cleanAbsence).filter(Boolean):[];const named=capAbsences(cleaned.filter(a=>a.reason!=='Unaccounted'),total);const namedSum=named.reduce((sum,a)=>sum+a.count,0);let present=parseInt(raw&&raw.present,10);if(!Number.isFinite(present)){const folded=cleaned.filter(a=>a.reason==='Unaccounted').reduce((sum,a)=>sum+a.count,0);present=total-namedSum-folded}present=Math.max(0,Math.min(present,total-namedSum));out.push({n,total,present,absences:named})});out.sort((a,b)=>a.n-b.n);return out.length?{platoons:out}:null}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({platoons:S.platoons.map(p=>({n:p.n,total:p.total,present:p.present,absences:p.absences}))}))}catch(e){toast('Could not save on this phone')}}
 function absenceCount(p){return (p.absences||[]).reduce((s,a)=>s+(+a.count||0),0)}
-function presentOf(p){return Math.max(0,p.total-absenceCount(p))}
+function presentOf(p){return p.present}
+function unaccounted(p){return Math.max(0,p.total-p.present-absenceCount(p))}
+function fitPresent(p){p.present=Math.max(0,Math.min(p.present,p.total-absenceCount(p)))}
 function totals(){let p=0,t=0;S.platoons.forEach(x=>{p+=presentOf(x);t+=x.total});return[p,t]}
-function reasonMap(){const m=new Map();REASONS.forEach(r=>m.set(r,0));S.platoons.forEach(p=>(p.absences||[]).forEach(a=>m.set(a.reason,(m.get(a.reason)||0)+a.count)));return m}
-function partsOf(p){return (p.absences||[]).filter(a=>a.count>0).map(a=>a.count+' '+a.reason+(a.ids.length?' ('+a.ids.join(', ')+')':''))}
+function reasonMap(){const m=new Map();REASONS.forEach(r=>m.set(r,0));let u=0;S.platoons.forEach(p=>{(p.absences||[]).forEach(a=>m.set(a.reason,(m.get(a.reason)||0)+a.count));u+=unaccounted(p)});if(u)m.set('Unaccounted',u);return m}
+function partsOf(p){const parts=(p.absences||[]).filter(a=>a.count>0).map(a=>a.count+' '+a.reason+(a.ids.length?' ('+a.ids.join(', ')+')':''));const u=unaccounted(p);if(u)parts.push(u+' Unaccounted');return parts}
 function allIds(skip){const ids=new Set();S.platoons.forEach((p,pi)=>p.absences.forEach((a,ai)=>{if(skip&&skip.pi===pi&&skip.ai===ai)return;a.ids.forEach(id=>ids.add(id))}));return ids}
 function render(){const[p,t]=totals();tot.textContent=p+'/'+t;totsub.textContent=(t-p)+' out · total company strength';
  const m=reasonMap();const extra=[...m.keys()].filter(k=>!REASONS.includes(k)&&m.get(k)>0);
  rs.innerHTML=REASONS.concat(extra).map(k=>`<span class="${m.get(k)?'':'z'}">${esc(k)}<b>${m.get(k)||0}</b></span>`).join('');
- list.innerHTML=S.platoons.map((pl,i)=>{const bits=partsOf(pl);return `<button type="button" class="sec" data-platoon="${pl.n}" onclick="openAbs(${i})"><div class="sh"><span>Platoon ${pl.n}</span><b>${presentOf(pl)}/${pl.total}</b></div><div class="${bits.length?'break':'muted'}">${bits.length?bits.map(esc).join('<br>'):'All present · tap to log absences'}</div></button>`}).join('')}
+ list.innerHTML=S.platoons.map((pl,i)=>{const chips=[];pl.absences.forEach(a=>{if(!a.count)return;const ids=a.ids.length?' ('+a.ids.join(', ')+')':'';chips.push(`<span>${a.count} ${esc(a.reason)}${esc(ids)}</span>`)});const u=unaccounted(pl);if(u)chips.push(`<span class="u">${u} Unaccounted</span>`);if(!chips.length)chips.push('<span class="hint">Log absences</span>');return `<div class="sec" data-platoon="${pl.n}"><button type="button" class="pname" onclick="openAbs(${i})">Platoon ${pl.n}</button><div class="step"><button type="button" aria-label="Decrease Platoon ${pl.n}" onclick="step(${i},-1)">−</button><input data-present="${i}" inputmode="numeric" autocomplete="off" aria-label="Platoon ${pl.n} present" value="${pl.present}" onclick="this.select()" onchange="setPresent(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()"><span class="of">/ ${pl.total}</span><button type="button" aria-label="Increase Platoon ${pl.n}" onclick="step(${i},1)">+</button></div><button type="button" class="chiprow" aria-label="Absences for Platoon ${pl.n}" onclick="openAbs(${i})">${chips.join('')}</button></div>`}).join('')}
+function setPresent(i,v){const pl=S.platoons[i];if(!pl)return;const max=pl.total-absenceCount(pl);const n=Math.max(0,Math.min(parseInt(String(v).replace(/\D/g,''),10)||0,max));pl.present=n;save();render()}
+function step(i,d){const input=document.querySelector('[data-present="'+i+'"]');const typed=input?parseInt(input.value,10):NaN;const base=Number.isFinite(typed)?typed:S.platoons[i].present;setPresent(i,base+d)}
 function cur(){return S.platoons[absI]}
 function room(exceptAi){const p=cur();if(!p)return 0;let used=0;p.absences.forEach((a,i)=>{if(i!==exceptAi)used+=a.count});return Math.max(0,p.total-used)}
 function openAbs(i){absI=i;absReason='MC';pending=[];absCustom.value='';absId.value='';setCount(1);drawAbs();absD.showModal()}
@@ -113,13 +122,13 @@ function addPendingId(){const ids=takeIds(absId.value);if(!ids)return;if(!ids.le
 function dropPending(id){pending=pending.filter(x=>x!==id);drawPending()}
 function addAbsence(){const p=cur();if(!p)return;const reason=canonReason(absCustom.value.trim()||absReason);if(!reason)return toast('Pick a reason');let count=Math.max(parseInt(absCount.value,10)||1,pending.length);const space=room(-1);if(count>space)return toast(space?('Only '+space+' left in this platoon'):'This platoon is already fully out');
  const hit=p.absences.find(a=>a.reason===reason);if(hit){const merged=hit.ids.concat(pending.filter(id=>!hit.ids.includes(id)));if(hit.count+count>space+hit.count)return toast('Only '+space+' left in this platoon');hit.count+=count;hit.ids=merged}else p.absences.push({reason,count,ids:pending.slice()});
- pending=[];absId.value='';absCustom.value='';absReason=reason==='MC'||REASONS.includes(reason)?reason:'MC';setCount(1);save();render();drawAbs()}
-function setAbs(i,v){const p=cur(),a=p&&p.absences[i];if(!a)return;let n=parseInt(v,10)||0;const max=room(i);n=Math.max(a.ids.length,Math.min(n,max));if(n<1){removeAbsence(i);return}a.count=n;save();render();drawAbs()}
+ pending=[];absId.value='';absCustom.value='';absReason=REASONS.includes(reason)?reason:'MC';fitPresent(p);save();render();drawAbs()}
+function setAbs(i,v){const p=cur(),a=p&&p.absences[i];if(!a)return;const old=a.count;let n=parseInt(v,10)||0;const max=room(i);n=Math.max(a.ids.length,Math.min(n,max));if(n<1){removeAbsence(i);return}a.count=n;if(n<old)p.present=Math.min(p.total-absenceCount(p),p.present+(old-n));else fitPresent(p);save();render();drawAbs()}
 function stepAbs(i,d){const a=cur().absences[i];setAbs(i,a.count+d)}
-function removeAbsence(i){cur().absences.splice(i,1);save();render();drawAbs()}
-function addRowId(i){const input=document.getElementById('more-'+i);const ids=takeIds(input.value);if(!ids)return;if(!ids.length)return toast('Enter a 4D number');const a=cur().absences[i];const fresh=ids.filter(id=>!a.ids.includes(id));if(!fresh.length)return toast('Already added');const max=room(i);if(a.ids.length+fresh.length>max)return toast(max>a.ids.length?('Only '+(max-a.ids.length)+' more in this platoon'):'This platoon is already fully out');fresh.forEach(id=>a.ids.push(id));if(a.count<a.ids.length)a.count=a.ids.length;input.value='';save();render();drawAbs()}
+function removeAbsence(i){const p=cur(),c=p.absences[i].count;p.absences.splice(i,1);p.present=Math.min(p.total-absenceCount(p),p.present+c);save();render();drawAbs()}
+function addRowId(i){const input=document.getElementById('more-'+i);const ids=takeIds(input.value);if(!ids)return;if(!ids.length)return toast('Enter a 4D number');const a=cur().absences[i];const fresh=ids.filter(id=>!a.ids.includes(id));if(!fresh.length)return toast('Already added');const max=room(i);if(a.ids.length+fresh.length>max)return toast(max>a.ids.length?('Only '+(max-a.ids.length)+' more in this platoon'):'This platoon is already fully out');fresh.forEach(id=>a.ids.push(id));if(a.count<a.ids.length)a.count=a.ids.length;fitPresent(cur());input.value='';save();render();drawAbs()}
 function removeId(i,id){const a=cur().absences[i];a.ids=a.ids.filter(x=>x!==id);save();render();drawAbs()}
-function resetDay(){if(!confirm('Mark everyone present? Setup is kept.'))return;S.platoons.forEach(p=>{p.absences=[]});save();render()}
+function resetDay(){if(!confirm('Mark everyone present? Setup is kept.'))return;S.platoons.forEach(p=>{p.absences=[];p.present=p.total});save();render()}
 function report(){const lines=S.platoons.map(p=>{const parts=partsOf(p);let l='Platoon '+p.n+': '+presentOf(p)+'/'+p.total;if(parts.length)l+=' - '+parts.join(', ');return l});
  const[p,t]=totals(),d=new Date(),pad=n=>String(n).padStart(2,'0');
  const rs=[...reasonMap()].filter(([,v])=>v>0).map(([k,v])=>k+': '+v);
@@ -131,20 +140,20 @@ function once(fn,e){if(e)e.preventDefault();const now=Date.now();if(now-lastBar<
 function pressCopy(e){once(copyReport,e)}
 function pressReset(e){once(resetDay,e)}
 async function copyReport(){const btn=document.querySelector('.bar button');btn.textContent='Copied';const text=report();await copyText(text,'Report copied');setTimeout(()=>{btn.textContent='Copy company report'},2000);if(navigator.share){try{await navigator.share({text})}catch(e){}}}
-function openSetup(){tmp=S.platoons.map(p=>({n:p.n,total:p.total,absences:p.absences.map(a=>({...a,ids:a.ids.slice()}))}));drawTmp();setD.showModal()}
+function openSetup(){tmp=S.platoons.map(p=>({n:p.n,total:p.total,oldTotal:p.total,present:p.present,absences:p.absences.map(a=>({...a,ids:a.ids.slice()}))}));drawTmp();setD.showModal()}
 function drawTmp(){slist.innerHTML=tmp.map((p,i)=>`<div class="row" style="margin:6px 0"><input inputmode="numeric" aria-label="Platoon number" value="${p.n}" oninput="setTmpN(${i},this.value)"><input inputmode="numeric" aria-label="Platoon ${p.n} total" value="${p.total}" oninput="setTmpTotal(${i},this.value)"><button type="button" class="d" style="flex:0" aria-label="Remove platoon ${p.n}" onclick="removePlt(${i})">✕</button></div>`).join('')}
 function setTmpN(i,v){if(tmp[i])tmp[i].n=parseInt(v,10)||0}
 function setTmpTotal(i,v){if(tmp[i])tmp[i].total=parseInt(v,10)||0}
 function removePlt(i){readTmp();tmp.splice(i,1);drawTmp()}
-function addPlt(){readTmp();const n=(tmp.length?Math.max(...tmp.map(p=>+p.n||0)):0)+1;const total=tmp.length?(+tmp[tmp.length-1].total||DEFAULT_TOTAL):DEFAULT_TOTAL;tmp.push({n,total,absences:[]});drawTmp()}
+function addPlt(){readTmp();const n=(tmp.length?Math.max(...tmp.map(p=>+p.n||0)):0)+1;const total=tmp.length?(+tmp[tmp.length-1].total||DEFAULT_TOTAL):DEFAULT_TOTAL;tmp.push({n,total,oldTotal:total,present:total,absences:[]});drawTmp()}
 function readTmp(){const rows=[...slist.querySelectorAll('.row')];rows.forEach((row,i)=>{if(!tmp[i])return;const inputs=row.querySelectorAll('input');tmp[i].n=parseInt(inputs[0].value,10)||0;tmp[i].total=parseInt(inputs[1].value,10)||0})}
 function saveSetup(){readTmp();if(!tmp.length)return toast('Add at least one platoon');
- const rows=tmp.map(p=>({n:+p.n||0,total:+p.total||0,absences:(p.absences||[]).map(a=>({...a,ids:a.ids.slice()}))}));
+ const rows=tmp.map(p=>{const absences=(p.absences||[]).map(a=>({...a,ids:a.ids.slice()}));const named=absences.reduce((s,a)=>s+a.count,0);const total=+p.total||0;let present=+p.present||0;const grew=total-(+p.oldTotal||total);if(grew>0)present+=grew;present=Math.max(0,Math.min(present,Math.max(0,total-named)));return{n:+p.n||0,total,present,absences,named}});
  if(rows.some(p=>!(p.n>=1&&p.n<=9)))return toast('Platoon must be 1-9');
  if(rows.some(p=>!(p.total>0)))return toast('Total must be at least 1');
  if(new Set(rows.map(p=>p.n)).size!==rows.length)return toast('Platoon numbers must be different');
- const over=rows.find(p=>absenceCount(p)>p.total);if(over)return toast('Platoon '+over.n+' has more people out than the new total');
- rows.sort((a,b)=>a.n-b.n);S.platoons=rows;save();render();setD.close()}
+ const over=rows.find(p=>p.named>p.total);if(over)return toast('Platoon '+over.n+' has more people out than the new total');
+ rows.sort((a,b)=>a.n-b.n);S.platoons=rows.map(({named,...p})=>p);save();render();setD.close()}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2000)}
 render();
 </script></body></html>
