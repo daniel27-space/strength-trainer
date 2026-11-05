@@ -11,83 +11,80 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233a5a40'/%3E%3Ctext x='50' y='64' font-size='40' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3ECOY%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233a5a40'/%3E%3Ctext x='50' y='64' font-size='40' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3ECOY%3C/text%3E%3C/svg%3E">
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,system-ui,sans-serif;background:#0f1512;color:#e8efe9;padding:env(safe-area-inset-top) 12px 90px}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,system-ui,sans-serif;background:#0f1512;color:#e8efe9;padding:env(safe-area-inset-top) 12px 90px;font-variant-numeric:tabular-nums}
 h1{font-size:18px;margin:12px 0 4px;color:#9fb8a3}
-.total{background:#3a5a40;border-radius:16px;padding:16px;text-align:center;margin:8px 0 10px}
-.total b{font-size:48px;display:block}.total small{opacity:.85}
-.rs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}.rs span{background:#1a221d;border-radius:10px;padding:8px 10px;font-size:15px}.rs span b{font-size:17px;margin-left:4px}.rs .z{opacity:.45}.rs .u{background:#5a4a1f}
-.pl{background:#1a221d;border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer}
-.ph{display:flex;justify-content:space-between;align-items:center;font-size:19px}.ph b{font-size:30px}
-.pl .rs{margin:8px 0 0}.pl .rs span{background:#24312a;font-size:13px;padding:5px 8px}.pl .rs span b{font-size:14px}
-.warn{color:#f0c674;font-weight:600}.muted{color:#8a9a8d;font-size:13px}
-.det{display:none;margin-top:8px}.pl.open .det{display:block}
-.sec{border-top:1px solid #2a352d;padding:8px 0}.sec .sh{display:flex;justify-content:space-between;font-size:16px}
-.ids{font-size:14px;color:#cdd9cf;margin-top:2px}
+.total{background:#3a5a40;border-radius:16px;padding:16px;text-align:center;margin:8px 0 12px}
+.total b{font-size:44px;display:block}.total small{opacity:.8}
+.sec{background:#1a221d;border-radius:14px;padding:12px;margin-bottom:10px}
+.sh{display:flex;justify-content:space-between;align-items:center;font-size:18px;margin-bottom:8px}
+.step{display:flex;gap:8px;align-items:center}.step button{flex:0 0 52px;font-size:22px;padding:0}
+.step input{text-align:center;font-size:26px;font-weight:700;background:#24312a;border:1px dashed #5b8a62;min-height:52px}
+.of{flex:0 0 auto;font-size:22px;font-weight:700;white-space:nowrap}
+.muted{color:#8a9a8d;font-size:13px}.warn{color:#f0c674;font-weight:600}
 button{font:inherit;border:0;border-radius:12px;padding:12px 14px;min-height:46px;background:#2b3a2f;color:#e8efe9}
-button.p{background:#5b8a62;color:#fff;font-weight:600}
-.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#0f1512ee}
-.bar button{flex:1;min-height:52px}
+button.p{background:#5b8a62;color:#fff;font-weight:600}button.d{background:#6b2b2b}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#0f1512ee}
+.bar button{flex:1;padding:12px 8px;font-size:15px;white-space:nowrap}
 input{font:inherit;width:100%;padding:12px;border-radius:12px;border:1px solid #34443a;background:#111813;color:#fff;min-height:46px}
-label{display:block;margin:10px 0 4px;color:#9fb8a3;font-size:14px}
+dialog{background:#1a221d;color:#e8efe9;border:0;border-radius:18px;width:min(94vw,480px);max-height:min(92vh,720px);overflow:auto;padding:16px}
+dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9fb8a3;font-size:14px}
 .row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
-#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#5b8a62;padding:10px 18px;border-radius:20px;display:none;z-index:9}
-.gear{flex:0 0 52px;width:52px;height:52px;padding:0}
+#toast{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#5b8a62;color:#fff;font-weight:700;padding:12px 18px;border-radius:20px;display:none;z-index:100;box-shadow:0 8px 24px #0008}
 .foot{text-align:center;margin:18px 0 8px}.foot a{color:#9fb8a3;font-size:14px}
-.card{background:#1a221d;border-radius:16px;padding:16px;margin-top:20px}
+.row>.gear{flex:0 0 52px;width:52px;height:52px;padding:0;display:inline-flex;align-items:center;justify-content:center}
 </style></head><body>
-<div class="row"><h1>Company Strength</h1><button class="gear" aria-label="Change company code" onclick="changeCode()">⚙︎</button></div>
-<div id="setup" class="card" style="display:none">
-<h1 style="margin-top:0">Enter company code</h1>
-<div class="muted">The same code every platoon IC puts in their app (Settings → Company link).</div>
-<label>Company code</label><input id="cin" autocomplete="off" autocapitalize="off">
-<button class="p" style="width:100%;margin-top:12px" onclick="saveCode()">Save</button>
-</div>
-<div id="main" style="display:none">
-<div class="total"><b id="tot">–</b><small id="totsub">Tap Refresh to load</small></div>
-<div class="rs" id="rs"></div>
-<div id="pls"></div>
-</div>
+<div class="row"><h1>Company Strength</h1><button type="button" class="gear" aria-label="Settings" onclick="openSetup()"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
+<div class="total"><b id="tot">0/0</b><small id="totsub"></small></div>
+<div id="list"></div>
 <div class="foot"><a href="index.html">← Platoon tracker</a></div>
-<div class="bar" id="bar" style="display:none"><button class="p" id="refB" onclick="refresh()">Refresh</button><button onclick="copyReport()">Copy company report</button></div>
+<div class="bar"><button type="button" onpointerdown="pressCopy(event)" onclick="pressCopy(event)">Copy company report</button><button type="button" onpointerdown="pressReset(event)" onclick="pressReset(event)">Reset day</button></div>
 <div id="toast"></div>
+
+<dialog id="setD"><form method="dialog" onsubmit="return false">
+<h1 style="margin-top:0">Settings</h1>
+<label>Platoons (number → total strength)</label>
+<div class="muted">Platoon number, then full strength. Present is edited on the main screen.</div>
+<div id="slist"></div>
+<button type="button" onclick="addPlt()" style="margin-top:8px">+ Add platoon</button>
+<div class="row" style="margin-top:14px"><button type="button" onclick="setD.close()">Cancel</button><button type="button" class="p" onclick="saveSetup()">Save</button></div>
+</form></dialog>
+
 <script>
-const SB='https://vxyeipqfvgyoupecqudb.supabase.co',SBK='sb_publishable_xHaz5dPwP7JCeumZIuiXbA_-hFNGgaR';
-const KEY='strengthTracker.company.v1',CATS=['MC','Ammo','Physio','Break','Other'],PLATOONS=[1,2,3,4],STALE=30*60*1000;
-let C=load();
-function load(){try{const c=JSON.parse(localStorage.getItem(KEY));if(c)return c}catch(e){}return{code:'',rows:null,fetched:null}}
-function save(){localStorage.setItem(KEY,JSON.stringify(C))}
-function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-const pad=n=>String(n).padStart(2,'0'),hm=d=>pad(d.getHours())+':'+pad(d.getMinutes());
-function cat(r){r=String(r||'').toLowerCase();return r==='mc'?'MC':r==='ammo'?'Ammo':r==='physio'?'Physio':r==='break'?'Break':'Other'}
-function zero(){const o={};CATS.forEach(c=>o[c]=0);o.Unaccounted=0;return o}
-function sumP(p){const c=zero();let pr=0,t=0;(p.sections||[]).forEach(s=>{const outs=s.outs||[];pr+=+s.present||0;t+=+s.total||0;outs.forEach(o=>c[cat(o.reason)]++);c.Unaccounted+=Math.max(0,(+s.total||0)-(+s.present||0)-outs.length)});return{p:pr,t,c}}
-function chips(c,cls){return CATS.concat('Unaccounted').map(k=>`<span class="${c[k]?(k==='Unaccounted'?'u':''):'z'}">${k==='Unaccounted'?'Unacc.':k}<b>${c[k]}</b></span>`).join('')}
-function show(){const has=!!C.code;setup.style.display=has?'none':'block';main.style.display=has?'block':'none';bar.style.display=has?'flex':'none';if(has)render()}
-function saveCode(){const v=cin.value.trim();if(v.length<6)return toast('Min 6 characters');C.code=v;C.rows=null;C.fetched=null;save();show();refresh()}
-function changeCode(){cin.value=C.code||'';C.code='';setup.style.display='block';main.style.display='none';bar.style.display='none'}
-function plist(){const rows=C.rows||[],ns=new Set(PLATOONS);rows.forEach(r=>ns.add(r.platoon));return[...ns].sort((a,b)=>a-b).map(n=>({n,row:rows.find(r=>r.platoon===n)}))}
-function render(){
- if(!C.rows){tot.textContent='–';totsub.textContent='Tap Refresh to load';rs.innerHTML='';pls.innerHTML='';return}
- const all=zero();let P=0,T=0;const now=Date.now();
- pls.innerHTML=plist().map(({n,row})=>{
-  if(!row)return `<div class="pl"><div class="ph"><span>Platoon ${n}</span><b>–</b></div><div class="warn">⚠ Not sent yet</div></div>`;
-  const s=sumP(row.payload),at=new Date(row.sent_at),old=now-at>STALE;P+=s.p;T+=s.t;for(const k in all)all[k]+=s.c[k];
-  const secs=(row.payload.sections||[]).map(x=>{const outs=x.outs||[];const un=Math.max(0,x.total-x.present-outs.length);return `<div class="sec"><div class="sh"><span>Section ${esc(x.n)}</span><b>${esc(x.present)}/${esc(x.total)}</b></div>${outs.length?`<div class="ids">${outs.map(o=>`<b>${esc(o.id)}</b> ${esc(o.reason)}`).join(' · ')}</div>`:''}${un?`<div class="warn" style="font-size:13px">${un} unaccounted</div>`:''}${!outs.length&&!un?'<div class="muted">All present</div>':''}</div>`}).join('');
-  return `<div class="pl${C.open==n?' open':''}" onclick="toggle(${n})"><div class="ph"><span>Platoon ${n}</span><b>${s.p}/${s.t}</b></div><div class="${old?'warn':'muted'}">${old?'⚠ ':''}Last sent ${(new Date(now).toDateString()===at.toDateString())?hm(at):pad(at.getDate())+'/'+pad(at.getMonth()+1)+' '+hm(at)}${old?' (over 30 min ago)':''}</div><div class="rs">${chips(s.c)}</div><div class="det">${secs}</div></div>`}).join('');
- tot.textContent=P+'/'+T;totsub.textContent=(T-P)+' out · Updated '+(C.fetched?hm(new Date(C.fetched)):'–');rs.innerHTML=chips(all)}
-function toggle(n){C.open=C.open==n?null:n;save();render()}
-async function refresh(){if(!C.code)return;refB.disabled=true;refB.textContent='Loading…';
- try{const r=await fetch(SB+'/rest/v1/rpc/get_company',{method:'POST',headers:{apikey:SBK,'Content-Type':'application/json'},body:JSON.stringify({code:C.code})});
-  if(!r.ok)throw new Error('Server error '+r.status);C.rows=await r.json();C.fetched=Date.now();save();render();toast(C.rows.length?'Updated':'No platoons have sent with this code')}
- catch(e){toast('Could not refresh – no signal?')}
- refB.disabled=false;refB.textContent='Refresh'}
-function report(){if(!C.rows)return '';const d=new Date(),all=zero();let P=0,T=0;
- const lines=plist().map(({n,row})=>{if(!row)return `Plt ${n}: not sent`;const s=sumP(row.payload);P+=s.p;T+=s.t;for(const k in all)all[k]+=s.c[k];
-  const parts=CATS.concat('Unaccounted').filter(k=>s.c[k]).map(k=>s.c[k]+' '+k);return `Plt ${n}: ${s.p}/${s.t}`+(parts.length?' - '+parts.join(', '):'')+` (sent ${hm(new Date(row.sent_at))})`});
- const rt=CATS.concat('Unaccounted').filter(k=>all[k]).map(k=>k+': '+all[k]);
- return `Company strength: ${P}/${T}\n\n`+lines.join('\n')+(rt.length?'\n\n'+rt.join('\n'):'')+`\n\n${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}${pad(d.getMinutes())}hrs`}
-async function copyText(t,msg){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}toast(msg)}
-async function copyReport(){const t=report();if(!t)return toast('Refresh first');await copyText(t,'Report copied');if(navigator.share){try{await navigator.share({text:t})}catch(e){}}}
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',1800)}
-show();
+const KEY='strengthTracker.company.local.v1',DEFAULT_TOTAL=62;
+let S=load(),tmp=[];
+function fresh(){return{platoons:[1,2,3,4].map(n=>({n,total:DEFAULT_TOTAL,present:DEFAULT_TOTAL}))}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.platoons)){const n=normalize(s);if(n)return n}}catch(e){}return fresh()}
+function normalize(s){const out=[],seen=new Set();s.platoons.forEach(raw=>{const n=parseInt(raw&&raw.n,10),total=parseInt(raw&&raw.total,10);let present=parseInt(raw&&raw.present,10);if(!(n>=1&&n<=9)||!(total>0)||seen.has(n))return;seen.add(n);if(!Number.isFinite(present))present=total;present=Math.max(0,Math.min(present,total));out.push({n,total,present})});out.sort((a,b)=>a.n-b.n);return out.length?{platoons:out}:null}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Could not save on this phone')}}
+function totals(){let p=0,t=0;S.platoons.forEach(x=>{p+=x.present;t+=x.total});return[p,t]}
+function render(){const[p,t]=totals();tot.textContent=p+'/'+t;totsub.textContent=(t-p)+' out · total company strength';
+ list.innerHTML=S.platoons.map((pl,i)=>{const o=pl.total-pl.present;return `<div class="sec" data-platoon="${pl.n}"><div class="sh"><span>Platoon ${pl.n}</span><span class="${o?'warn':'muted'}">${o?o+' out':'All present'}</span></div><div class="step"><button type="button" aria-label="Decrease Platoon ${pl.n}" onclick="step(${i},-1)">−</button><input data-present="${i}" inputmode="numeric" autocomplete="off" aria-label="Platoon ${pl.n} present" value="${pl.present}" onclick="this.select()" onchange="setPresent(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()"><span class="of">/ ${pl.total}</span><button type="button" aria-label="Increase Platoon ${pl.n}" onclick="step(${i},1)">+</button></div></div>`}).join('')}
+function setPresent(i,v){const pl=S.platoons[i];if(!pl)return;const n=Math.max(0,Math.min(parseInt(String(v).replace(/\D/g,''),10)||0,pl.total));pl.present=n;save();render()}
+function step(i,d){const input=document.querySelector('[data-present="'+i+'"]');const typed=input?parseInt(input.value,10):NaN;const base=Number.isFinite(typed)?typed:S.platoons[i].present;setPresent(i,base+d)}
+function resetDay(){if(!confirm('Mark everyone present? Setup is kept.'))return;S.platoons.forEach(p=>{p.present=p.total});save();render()}
+function report(){const lines=S.platoons.map(p=>'Platoon '+p.n+': '+p.present+'/'+p.total);const[p,t]=totals(),d=new Date(),pad=n=>String(n).padStart(2,'0');
+ return 'Company strength: '+p+'/'+t+'\n\n'+lines.join('\n')+'\n\n'+pad(d.getDate())+'/'+pad(d.getMonth()+1)+' '+pad(d.getHours())+pad(d.getMinutes())+'hrs'}
+function fallbackCopy(t){try{const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.position='fixed';a.style.left='-9999px';document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}catch(e){}}
+async function copyText(t,msg){toast(msg);try{if(navigator.clipboard&&navigator.clipboard.writeText){await Promise.race([navigator.clipboard.writeText(t),new Promise((_,rej)=>setTimeout(()=>rej(new Error('slow')),400))])}else fallbackCopy(t)}catch(e){fallbackCopy(t)}}
+let lastBar=0;
+function once(fn,e){if(e)e.preventDefault();const now=Date.now();if(now-lastBar<400)return;lastBar=now;fn()}
+function pressCopy(e){once(copyReport,e)}
+function pressReset(e){once(resetDay,e)}
+async function copyReport(){const btn=document.querySelector('.bar button');btn.textContent='Copied';const t=report();await copyText(t,'Report copied');setTimeout(()=>{btn.textContent='Copy company report'},2000);if(navigator.share){try{await navigator.share({text:t})}catch(e){}}}
+function openSetup(){tmp=S.platoons.map(p=>({n:p.n,total:p.total,present:p.present,full:p.present===p.total}));drawTmp();setD.showModal()}
+function drawTmp(){slist.innerHTML=tmp.map((p,i)=>`<div class="row" style="margin:6px 0"><input inputmode="numeric" aria-label="Platoon number" value="${p.n}" oninput="setTmpN(${i},this.value)"><input inputmode="numeric" aria-label="Platoon ${p.n} total" value="${p.total}" oninput="setTmpTotal(${i},this.value)"><button type="button" class="d" style="flex:0" aria-label="Remove platoon ${p.n}" onclick="removePlt(${i})">✕</button></div>`).join('')}
+function setTmpN(i,v){if(tmp[i])tmp[i].n=parseInt(v,10)||0}
+function setTmpTotal(i,v){if(tmp[i])tmp[i].total=parseInt(v,10)||0}
+function removePlt(i){readTmp();tmp.splice(i,1);drawTmp()}
+function addPlt(){readTmp();const n=(tmp.length?Math.max(...tmp.map(p=>+p.n||0)):0)+1;const total=tmp.length?(+tmp[tmp.length-1].total||DEFAULT_TOTAL):DEFAULT_TOTAL;tmp.push({n,total,present:total,full:true});drawTmp()}
+function readTmp(){const rows=[...slist.querySelectorAll('.row')];rows.forEach((row,i)=>{if(!tmp[i])return;const inputs=row.querySelectorAll('input');tmp[i].n=parseInt(inputs[0].value,10)||0;tmp[i].total=parseInt(inputs[1].value,10)||0})}
+function saveSetup(){readTmp();if(!tmp.length)return toast('Add at least one platoon');
+ const rows=tmp.map(p=>({n:+p.n||0,total:+p.total||0,present:p.full?(+p.total||0):(+p.present||0)}));
+ if(rows.some(p=>!(p.n>=1&&p.n<=9)))return toast('Platoon must be 1-9');
+ if(rows.some(p=>!(p.total>0)))return toast('Total must be at least 1');
+ if(new Set(rows.map(p=>p.n)).size!==rows.length)return toast('Platoon numbers must be different');
+ rows.forEach(p=>{p.present=Math.max(0,Math.min(p.present,p.total))});rows.sort((a,b)=>a.n-b.n);
+ S.platoons=rows;save();render();setD.close()}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2000)}
+render();
 </script></body></html>
