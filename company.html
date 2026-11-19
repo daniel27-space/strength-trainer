@@ -80,12 +80,12 @@ dialog::backdrop{background:#000a}label{display:block;margin:10px 0 4px;color:#9
 </form></dialog>
 
 <script>
-const KEY='strengthTracker.company.local.v1',DEFAULT_TOTAL=62,REASONS=['MC','Ammo','Physio','Break','Other'];
+const KEY='strengthTracker.company.local.v1',DEFAULT_TOTAL=62,REASONS=['MC','MO','Physio','Break','Other'];
 const TRASH='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
 let S=load(),tmp=[],absI=0,absReason='MC',pending=[];
 function fresh(){return{platoons:[1,2,3,4].map(n=>({n,total:DEFAULT_TOTAL,present:DEFAULT_TOTAL,absences:[]}))}}
 function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-function canonReason(r){const t=String(r||'').trim();if(!t)return'';const hit=REASONS.find(x=>x.toLowerCase()===t.toLowerCase());return hit||t}
+function canonReason(r){let t=String(r||'').trim();if(!t)return'';if(t.toLowerCase()==='ammo')t='MO';const hit=REASONS.find(x=>x.toLowerCase()===t.toLowerCase());return hit||t}
 function cleanAbsence(raw){const reason=canonReason(raw&&raw.reason);if(!reason)return null;const ids=[];(raw.ids||[]).forEach(id=>{const s=String(id).replace(/\D/g,'');if(s.length===4&&!ids.includes(s))ids.push(s)});let count=parseInt(raw&&raw.count,10);if(!Number.isFinite(count)||count<ids.length)count=Math.max(ids.length,0);if(count<1&&!ids.length)return null;return{reason,count,ids}}
 function capAbsences(list,total){const out=[];let left=total;list.forEach(a=>{if(left<=0)return;const count=Math.min(a.count,left);const ids=a.ids.slice(0,count);out.push({reason:a.reason,count,ids});left-=count});return out}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.platoons)){const n=normalize(s);if(n)return n}}catch(e){}return fresh()}
